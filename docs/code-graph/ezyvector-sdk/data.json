@@ -1,0 +1,4435 @@
+{
+ "nodes": [
+  {
+   "id": "org_youngmonkeys_ezyvector_constant_ezyvectorconstants",
+   "key": "constant/EzyVectorConstants.java",
+   "label": "EzyVectorConstants",
+   "kind": "class",
+   "file": "constant/EzyVectorConstants.java",
+   "line": 1,
+   "layer": 0,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_constant_ezyvectordistance",
+   "key": "constant/EzyVectorDistance.java",
+   "label": "EzyVectorDistance",
+   "kind": "class",
+   "file": "constant/EzyVectorDistance.java",
+   "line": 1,
+   "layer": 0,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_constant_ezyvectortablenames",
+   "key": "constant/EzyVectorTableNames.java",
+   "label": "EzyVectorTableNames",
+   "kind": "class",
+   "file": "constant/EzyVectorTableNames.java",
+   "line": 1,
+   "layer": 0,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "key": "service/EzyVectorCollectionService.java",
+   "label": "EzyVectorCollectionService",
+   "kind": "class",
+   "file": "service/EzyVectorCollectionService.java",
+   "line": 1,
+   "layer": 1,
+   "in": 0,
+   "out": 8
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "key": "service/EzyVectorService.java",
+   "label": "EzyVectorService",
+   "kind": "class",
+   "file": "service/EzyVectorService.java",
+   "line": 1,
+   "layer": 1,
+   "in": 0,
+   "out": 38
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "key": "service/EzyVectorService.java#createCollectionIfAbsent()",
+   "label": "EzyVectorService.createCollectionIfAbsent()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 71,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 1,
+   "out": 6
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "key": "service/EzyVectorService.java#upsert()",
+   "label": "EzyVectorService.upsert()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 87,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 1,
+   "out": 10
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "key": "service/EzyVectorService.java#deletePoints()",
+   "label": "EzyVectorService.deletePoints()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 141,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 1,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "key": "service/EzyVectorService.java#search()",
+   "label": "EzyVectorService.search()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 173,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 1,
+   "out": 10
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_tosearchresults",
+   "key": "service/EzyVectorService.java#toSearchResults()",
+   "label": "EzyVectorService.toSearchResults()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 211,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 3
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_toexactsearchresults",
+   "key": "service/EzyVectorService.java#toExactSearchResults()",
+   "label": "EzyVectorService.toExactSearchResults()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 233,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 3
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "key": "service/EzyVectorService.java#getVectorSizeResultEntityByNameOrThrow()",
+   "label": "EzyVectorService.getVectorSizeResultEntityByNameOrThrow()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 255,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 4,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "key": "service/EzyVectorService.java#ensureMutableSegment()",
+   "label": "EzyVectorService.ensureMutableSegment()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 268,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 3,
+   "out": 3
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "key": "service/EzyVectorService.java#startBackfillIfNecessary()",
+   "label": "EzyVectorService.startBackfillIfNecessary()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 295,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 4,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "key": "service/EzyVectorService.java#backfillCollection()",
+   "label": "EzyVectorService.backfillCollection()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 334,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "key": "service/EzyVectorService.java#startHnswBuildIfNecessary()",
+   "label": "EzyVectorService.startHnswBuildIfNecessary()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 384,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 5,
+   "out": 7
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "key": "service/EzyVectorService.java#getReadyHnswIndex()",
+   "label": "EzyVectorService.getReadyHnswIndex()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 447,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 6
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "key": "service/EzyVectorService.java#updateHnswIndex()",
+   "label": "EzyVectorService.updateHnswIndex()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 478,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "key": "service/EzyVectorService.java#deleteFromHnswIndex()",
+   "label": "EzyVectorService.deleteFromHnswIndex()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 501,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "key": "service/EzyVectorService.java#buildHnswIndex()",
+   "label": "EzyVectorService.buildHnswIndex()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 519,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 2,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_insertintohnswindex",
+   "key": "service/EzyVectorService.java#insertIntoHnswIndex()",
+   "label": "EzyVectorService.insertIntoHnswIndex()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 570,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 3,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "key": "service/EzyVectorService.java#newVectorFileStorage()",
+   "label": "EzyVectorService.newVectorFileStorage()",
+   "kind": "method",
+   "file": "service/EzyVectorService.java",
+   "line": 588,
+   "owner": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "layer": 1,
+   "in": 11,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_ezyvectorsettingservice",
+   "key": "service/EzyVectorSettingService.java",
+   "label": "EzyVectorSettingService",
+   "kind": "class",
+   "file": "service/EzyVectorSettingService.java",
+   "line": 1,
+   "layer": 1,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "key": "service/PaginationEzyVectorCollectionPointService.java",
+   "label": "PaginationEzyVectorCollectionPointService",
+   "kind": "class",
+   "file": "service/PaginationEzyVectorCollectionPointService.java",
+   "line": 1,
+   "layer": 1,
+   "in": 0,
+   "out": 17
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "key": "service/PaginationEzyVectorCollectionSegmentService.java",
+   "label": "PaginationEzyVectorCollectionSegmentService",
+   "kind": "class",
+   "file": "service/PaginationEzyVectorCollectionSegmentService.java",
+   "line": 1,
+   "layer": 1,
+   "in": 0,
+   "out": 17
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "key": "service/PaginationEzyVectorCollectionService.java",
+   "label": "PaginationEzyVectorCollectionService",
+   "kind": "class",
+   "file": "service/PaginationEzyVectorCollectionService.java",
+   "line": 1,
+   "layer": 1,
+   "in": 0,
+   "out": 17
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "key": "converter/EzyVectorEntityToModelConverter.java",
+   "label": "EzyVectorEntityToModelConverter",
+   "kind": "class",
+   "file": "converter/EzyVectorEntityToModelConverter.java",
+   "line": 1,
+   "layer": 2,
+   "in": 16,
+   "out": 16
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "key": "converter/EzyVectorModelToEntityConverter.java",
+   "label": "EzyVectorModelToEntityConverter",
+   "kind": "class",
+   "file": "converter/EzyVectorModelToEntityConverter.java",
+   "line": 1,
+   "layer": 2,
+   "in": 5,
+   "out": 14
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_converter_ezyvectorresulttomodelconverter",
+   "key": "converter/EzyVectorResultToModelConverter.java",
+   "label": "EzyVectorResultToModelConverter",
+   "kind": "class",
+   "file": "converter/EzyVectorResultToModelConverter.java",
+   "line": 1,
+   "layer": 2,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "key": "repo/EzyVectorCollectionPointRepository.java",
+   "label": "EzyVectorCollectionPointRepository",
+   "kind": "class",
+   "file": "repo/EzyVectorCollectionPointRepository.java",
+   "line": 1,
+   "layer": 3,
+   "in": 9,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "key": "repo/EzyVectorCollectionRepository.java",
+   "label": "EzyVectorCollectionRepository",
+   "kind": "class",
+   "file": "repo/EzyVectorCollectionRepository.java",
+   "line": 1,
+   "layer": 3,
+   "in": 10,
+   "out": 4
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionsegmentrepository",
+   "key": "repo/EzyVectorCollectionSegmentRepository.java",
+   "label": "EzyVectorCollectionSegmentRepository",
+   "kind": "class",
+   "file": "repo/EzyVectorCollectionSegmentRepository.java",
+   "line": 1,
+   "layer": 3,
+   "in": 3,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "key": "repo/PaginationEzyVectorCollectionPointRepository.java",
+   "label": "PaginationEzyVectorCollectionPointRepository",
+   "kind": "class",
+   "file": "repo/PaginationEzyVectorCollectionPointRepository.java",
+   "line": 1,
+   "layer": 3,
+   "in": 2,
+   "out": 6
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "key": "repo/PaginationEzyVectorCollectionRepository.java",
+   "label": "PaginationEzyVectorCollectionRepository",
+   "kind": "class",
+   "file": "repo/PaginationEzyVectorCollectionRepository.java",
+   "line": 1,
+   "layer": 3,
+   "in": 2,
+   "out": 6
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "key": "repo/PaginationEzyVectorCollectionSegmentRepository.java",
+   "label": "PaginationEzyVectorCollectionSegmentRepository",
+   "kind": "class",
+   "file": "repo/PaginationEzyVectorCollectionSegmentRepository.java",
+   "line": 1,
+   "layer": 3,
+   "in": 2,
+   "out": 6
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_defaultezyvectorcollectionfilter",
+   "key": "pagination/DefaultEzyVectorCollectionFilter.java",
+   "label": "DefaultEzyVectorCollectionFilter",
+   "kind": "class",
+   "file": "pagination/DefaultEzyVectorCollectionFilter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 0,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_defaultezyvectorcollectionpointfilter",
+   "key": "pagination/DefaultEzyVectorCollectionPointFilter.java",
+   "label": "DefaultEzyVectorCollectionPointFilter",
+   "kind": "class",
+   "file": "pagination/DefaultEzyVectorCollectionPointFilter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 0,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_defaultezyvectorcollectionsegmentfilter",
+   "key": "pagination/DefaultEzyVectorCollectionSegmentFilter.java",
+   "label": "DefaultEzyVectorCollectionSegmentFilter",
+   "kind": "class",
+   "file": "pagination/DefaultEzyVectorCollectionSegmentFilter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 0,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionfilter",
+   "key": "pagination/EzyVectorCollectionFilter.java",
+   "label": "EzyVectorCollectionFilter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionFilter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 5,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "key": "pagination/EzyVectorCollectionPaginationParameter.java",
+   "label": "EzyVectorCollectionPaginationParameter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "key": "pagination/EzyVectorCollectionPaginationParameterConverter.java",
+   "label": "EzyVectorCollectionPaginationParameterConverter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPaginationParameterConverter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 2,
+   "out": 4
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationsortorder",
+   "key": "pagination/EzyVectorCollectionPaginationSortOrder.java",
+   "label": "EzyVectorCollectionPaginationSortOrder",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPaginationSortOrder.java",
+   "line": 1,
+   "layer": 4,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointfilter",
+   "key": "pagination/EzyVectorCollectionPointFilter.java",
+   "label": "EzyVectorCollectionPointFilter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPointFilter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 5,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "key": "pagination/EzyVectorCollectionPointPaginationParameter.java",
+   "label": "EzyVectorCollectionPointPaginationParameter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPointPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "key": "pagination/EzyVectorCollectionPointPaginationParameterConverter.java",
+   "label": "EzyVectorCollectionPointPaginationParameterConverter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPointPaginationParameterConverter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 2,
+   "out": 4
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationsortorder",
+   "key": "pagination/EzyVectorCollectionPointPaginationSortOrder.java",
+   "label": "EzyVectorCollectionPointPaginationSortOrder",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionPointPaginationSortOrder.java",
+   "line": 1,
+   "layer": 4,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentfilter",
+   "key": "pagination/EzyVectorCollectionSegmentFilter.java",
+   "label": "EzyVectorCollectionSegmentFilter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionSegmentFilter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 5,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "key": "pagination/EzyVectorCollectionSegmentPaginationParameter.java",
+   "label": "EzyVectorCollectionSegmentPaginationParameter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionSegmentPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "key": "pagination/EzyVectorCollectionSegmentPaginationParameterConverter.java",
+   "label": "EzyVectorCollectionSegmentPaginationParameterConverter",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionSegmentPaginationParameterConverter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 2,
+   "out": 4
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationsortorder",
+   "key": "pagination/EzyVectorCollectionSegmentPaginationSortOrder.java",
+   "label": "EzyVectorCollectionSegmentPaginationSortOrder",
+   "kind": "class",
+   "file": "pagination/EzyVectorCollectionSegmentPaginationSortOrder.java",
+   "line": 1,
+   "layer": 4,
+   "in": 0,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionpaginationparameter",
+   "key": "pagination/IdAscEzyVectorCollectionPaginationParameter.java",
+   "label": "IdAscEzyVectorCollectionPaginationParameter",
+   "kind": "class",
+   "file": "pagination/IdAscEzyVectorCollectionPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 1,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionpointpaginationparameter",
+   "key": "pagination/IdAscEzyVectorCollectionPointPaginationParameter.java",
+   "label": "IdAscEzyVectorCollectionPointPaginationParameter",
+   "kind": "class",
+   "file": "pagination/IdAscEzyVectorCollectionPointPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 1,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionsegmentpaginationparameter",
+   "key": "pagination/IdAscEzyVectorCollectionSegmentPaginationParameter.java",
+   "label": "IdAscEzyVectorCollectionSegmentPaginationParameter",
+   "kind": "class",
+   "file": "pagination/IdAscEzyVectorCollectionSegmentPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 1,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpaginationparameter",
+   "key": "pagination/IdDescEzyVectorCollectionPaginationParameter.java",
+   "label": "IdDescEzyVectorCollectionPaginationParameter",
+   "kind": "class",
+   "file": "pagination/IdDescEzyVectorCollectionPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 3,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpointpaginationparameter",
+   "key": "pagination/IdDescEzyVectorCollectionPointPaginationParameter.java",
+   "label": "IdDescEzyVectorCollectionPointPaginationParameter",
+   "kind": "class",
+   "file": "pagination/IdDescEzyVectorCollectionPointPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 3,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionsegmentpaginationparameter",
+   "key": "pagination/IdDescEzyVectorCollectionSegmentPaginationParameter.java",
+   "label": "IdDescEzyVectorCollectionSegmentPaginationParameter",
+   "kind": "class",
+   "file": "pagination/IdDescEzyVectorCollectionSegmentPaginationParameter.java",
+   "line": 1,
+   "layer": 4,
+   "in": 3,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "key": "entity/EzyVectorCollection.java",
+   "label": "EzyVectorCollection",
+   "kind": "class",
+   "file": "entity/EzyVectorCollection.java",
+   "line": 1,
+   "layer": 5,
+   "in": 11,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "key": "entity/EzyVectorCollectionPoint.java",
+   "label": "EzyVectorCollectionPoint",
+   "kind": "class",
+   "file": "entity/EzyVectorCollectionPoint.java",
+   "line": 1,
+   "layer": 5,
+   "in": 12,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpointstatus",
+   "key": "entity/EzyVectorCollectionPointStatus.java",
+   "label": "EzyVectorCollectionPointStatus",
+   "kind": "class",
+   "file": "entity/EzyVectorCollectionPointStatus.java",
+   "line": 1,
+   "layer": 5,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "key": "entity/EzyVectorCollectionSegment.java",
+   "label": "EzyVectorCollectionSegment",
+   "kind": "class",
+   "file": "entity/EzyVectorCollectionSegment.java",
+   "line": 1,
+   "layer": 5,
+   "in": 11,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegmentstatus",
+   "key": "entity/EzyVectorCollectionSegmentStatus.java",
+   "label": "EzyVectorCollectionSegmentStatus",
+   "kind": "class",
+   "file": "entity/EzyVectorCollectionSegmentStatus.java",
+   "line": 1,
+   "layer": 5,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegmenttype",
+   "key": "entity/EzyVectorCollectionSegmentType.java",
+   "label": "EzyVectorCollectionSegmentType",
+   "kind": "class",
+   "file": "entity/EzyVectorCollectionSegmentType.java",
+   "line": 1,
+   "layer": 5,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionstatus",
+   "key": "entity/EzyVectorCollectionStatus.java",
+   "label": "EzyVectorCollectionStatus",
+   "kind": "class",
+   "file": "entity/EzyVectorCollectionStatus.java",
+   "line": 1,
+   "layer": 5,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "key": "model/EzyVectorCollectionModel.java",
+   "label": "EzyVectorCollectionModel",
+   "kind": "class",
+   "file": "model/EzyVectorCollectionModel.java",
+   "line": 1,
+   "layer": 5,
+   "in": 8,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "key": "model/EzyVectorCollectionPointModel.java",
+   "label": "EzyVectorCollectionPointModel",
+   "kind": "class",
+   "file": "model/EzyVectorCollectionPointModel.java",
+   "line": 1,
+   "layer": 5,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "key": "model/EzyVectorCollectionSegmentModel.java",
+   "label": "EzyVectorCollectionSegmentModel",
+   "kind": "class",
+   "file": "model/EzyVectorCollectionSegmentModel.java",
+   "line": 1,
+   "layer": 5,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "key": "model/EzyVectorSearchResultModel.java",
+   "label": "EzyVectorSearchResultModel",
+   "kind": "class",
+   "file": "model/EzyVectorSearchResultModel.java",
+   "line": 1,
+   "layer": 5,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "key": "model/SaveVectorCollectionModel.java",
+   "label": "SaveVectorCollectionModel",
+   "kind": "class",
+   "file": "model/SaveVectorCollectionModel.java",
+   "line": 1,
+   "layer": 5,
+   "in": 4,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel_vectors",
+   "key": "model/SaveVectorCollectionModel.java#Vectors",
+   "label": "SaveVectorCollectionModel.Vectors",
+   "kind": "inner",
+   "file": "model/SaveVectorCollectionModel.java",
+   "line": 27,
+   "layer": 5,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_model_savevectorpointmodel",
+   "key": "model/SaveVectorPointModel.java",
+   "label": "SaveVectorPointModel",
+   "kind": "class",
+   "file": "model/SaveVectorPointModel.java",
+   "line": 1,
+   "layer": 5,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_result_ezyvectorcollectionvectorsizeresult",
+   "key": "result/EzyVectorCollectionVectorSizeResult.java",
+   "label": "EzyVectorCollectionVectorSizeResult",
+   "kind": "class",
+   "file": "result/EzyVectorCollectionVectorSizeResult.java",
+   "line": 1,
+   "layer": 5,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "key": "hnsw/HnswIndex.java",
+   "label": "HnswIndex",
+   "kind": "class",
+   "file": "hnsw/HnswIndex.java",
+   "line": 1,
+   "layer": 6,
+   "in": 7,
+   "out": 32
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_hnswindex",
+   "key": "hnsw/HnswIndex.java#HnswIndex()",
+   "label": "HnswIndex.HnswIndex()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 67,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "key": "hnsw/HnswIndex.java#insert()",
+   "label": "HnswIndex.insert()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 112,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 11
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_remove",
+   "key": "hnsw/HnswIndex.java#remove()",
+   "label": "HnswIndex.remove()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 186,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "key": "hnsw/HnswIndex.java#search()",
+   "label": "HnswIndex.search()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 202,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 9
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "key": "hnsw/HnswIndex.java#searchWithTrace()",
+   "label": "HnswIndex.searchWithTrace()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 263,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 11
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getentrypointid",
+   "key": "hnsw/HnswIndex.java#getEntryPointId()",
+   "label": "HnswIndex.getEntryPointId()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 331,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getnodeids",
+   "key": "hnsw/HnswIndex.java#getNodeIds()",
+   "label": "HnswIndex.getNodeIds()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 336,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getnodelevel",
+   "key": "hnsw/HnswIndex.java#getNodeLevel()",
+   "label": "HnswIndex.getNodeLevel()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 351,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getneighborids",
+   "key": "hnsw/HnswIndex.java#getNeighborIds()",
+   "label": "HnswIndex.getNeighborIds()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 356,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getvector",
+   "key": "hnsw/HnswIndex.java#getVector()",
+   "label": "HnswIndex.getVector()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 364,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_size",
+   "key": "hnsw/HnswIndex.java#size()",
+   "label": "HnswIndex.size()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 369,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_save",
+   "key": "hnsw/HnswIndex.java#save()",
+   "label": "HnswIndex.save()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 379,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 4,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "key": "hnsw/HnswIndex.java#load()",
+   "label": "HnswIndex.load()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 422,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 3,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_writenode",
+   "key": "hnsw/HnswIndex.java#writeNode()",
+   "label": "HnswIndex.writeNode()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 460,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_readnode",
+   "key": "hnsw/HnswIndex.java#readNode()",
+   "label": "HnswIndex.readNode()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 480,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_removenode",
+   "key": "hnsw/HnswIndex.java#removeNode()",
+   "label": "HnswIndex.removeNode()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 515,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "key": "hnsw/HnswIndex.java#findActiveEntryPoint()",
+   "label": "HnswIndex.findActiveEntryPoint()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 531,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 6,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getmaxactivelevel",
+   "key": "hnsw/HnswIndex.java#getMaxActiveLevel()",
+   "label": "HnswIndex.getMaxActiveLevel()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 542,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "key": "hnsw/HnswIndex.java#searchLayer()",
+   "label": "HnswIndex.searchLayer()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 552,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 4,
+   "out": 7
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "key": "hnsw/HnswIndex.java#pruneNeighbors()",
+   "label": "HnswIndex.pruneNeighbors()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 630,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_randomlevel",
+   "key": "hnsw/HnswIndex.java#randomLevel()",
+   "label": "HnswIndex.randomLevel()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 660,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_normalize",
+   "key": "hnsw/HnswIndex.java#normalize()",
+   "label": "HnswIndex.normalize()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 668,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "key": "hnsw/HnswIndex.java#distance()",
+   "label": "HnswIndex.distance()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 684,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 6,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevector",
+   "key": "hnsw/HnswIndex.java#validateVector()",
+   "label": "HnswIndex.validateVector()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 692,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevectorsize",
+   "key": "hnsw/HnswIndex.java#validateVectorSize()",
+   "label": "HnswIndex.validateVectorSize()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 700,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatesearchvectorsize",
+   "key": "hnsw/HnswIndex.java#validateSearchVectorSize()",
+   "label": "HnswIndex.validateSearchVectorSize()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 713,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "key": "hnsw/HnswIndex.java#Node",
+   "label": "HnswIndex.Node",
+   "kind": "inner",
+   "file": "hnsw/HnswIndex.java",
+   "line": 724,
+   "layer": 6,
+   "in": 7,
+   "out": 4
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_node",
+   "key": "hnsw/HnswIndex.java#Node.Node()",
+   "label": "HnswIndex.Node.Node()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 731,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "key": "hnsw/HnswIndex.java#Node.neighbors()",
+   "label": "HnswIndex.Node.neighbors()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 743,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "layer": 6,
+   "in": 8,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_connect",
+   "key": "hnsw/HnswIndex.java#Node.connect()",
+   "label": "HnswIndex.Node.connect()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 749,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "layer": 6,
+   "in": 2,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_setneighbors",
+   "key": "hnsw/HnswIndex.java#Node.setNeighbors()",
+   "label": "HnswIndex.Node.setNeighbors()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 761,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate",
+   "key": "hnsw/HnswIndex.java#Candidate",
+   "label": "HnswIndex.Candidate",
+   "kind": "inner",
+   "file": "hnsw/HnswIndex.java",
+   "line": 768,
+   "layer": 6,
+   "in": 2,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate_candidate",
+   "key": "hnsw/HnswIndex.java#Candidate.Candidate()",
+   "label": "HnswIndex.Candidate.Candidate()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 772,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "key": "hnsw/HnswIndex.java#SearchResult",
+   "label": "HnswIndex.SearchResult",
+   "kind": "inner",
+   "file": "hnsw/HnswIndex.java",
+   "line": 778,
+   "layer": 6,
+   "in": 4,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult_searchresult",
+   "key": "hnsw/HnswIndex.java#SearchResult.SearchResult()",
+   "label": "HnswIndex.SearchResult.SearchResult()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 783,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "key": "hnsw/HnswIndex.java#SearchStep",
+   "label": "HnswIndex.SearchStep",
+   "kind": "inner",
+   "file": "hnsw/HnswIndex.java",
+   "line": 789,
+   "layer": 6,
+   "in": 4,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep_searchstep",
+   "key": "hnsw/HnswIndex.java#SearchStep.SearchStep()",
+   "label": "HnswIndex.SearchStep.SearchStep()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 796,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "key": "hnsw/HnswIndex.java#SearchTrace",
+   "label": "HnswIndex.SearchTrace",
+   "kind": "inner",
+   "file": "hnsw/HnswIndex.java",
+   "line": 809,
+   "layer": 6,
+   "in": 2,
+   "out": 3
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace_searchtrace",
+   "key": "hnsw/HnswIndex.java#SearchTrace.SearchTrace()",
+   "label": "HnswIndex.SearchTrace.SearchTrace()",
+   "kind": "method",
+   "file": "hnsw/HnswIndex.java",
+   "line": 814,
+   "owner": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "layer": 6,
+   "in": 2,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "key": "storage/EzyVectorFileStorage.java",
+   "label": "EzyVectorFileStorage",
+   "kind": "class",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 1,
+   "layer": 6,
+   "in": 3,
+   "out": 20
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ezyvectorfilestorage",
+   "key": "storage/EzyVectorFileStorage.java#EzyVectorFileStorage()",
+   "label": "EzyVectorFileStorage.EzyVectorFileStorage()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 48,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "key": "storage/EzyVectorFileStorage.java#upsertAll()",
+   "label": "EzyVectorFileStorage.upsertAll()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 57,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 3,
+   "out": 8
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "key": "storage/EzyVectorFileStorage.java#deleteAll()",
+   "label": "EzyVectorFileStorage.deleteAll()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 102,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 4
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "key": "storage/EzyVectorFileStorage.java#search()",
+   "label": "EzyVectorFileStorage.search()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 133,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 5
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getbackfillprogress",
+   "key": "storage/EzyVectorFileStorage.java#getBackfillProgress()",
+   "label": "EzyVectorFileStorage.getBackfillProgress()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 198,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 3,
+   "out": 2
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_savebackfillprogress",
+   "key": "storage/EzyVectorFileStorage.java#saveBackfillProgress()",
+   "label": "EzyVectorFileStorage.saveBackfillProgress()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 220,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 3
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "key": "storage/EzyVectorFileStorage.java#getSegmentDir()",
+   "label": "EzyVectorFileStorage.getSegmentDir()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 239,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 7,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "key": "storage/EzyVectorFileStorage.java#getHnswPath()",
+   "label": "EzyVectorFileStorage.getHnswPath()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 247,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 7,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ishnswpresent",
+   "key": "storage/EzyVectorFileStorage.java#isHnswPresent()",
+   "label": "EzyVectorFileStorage.isHnswPresent()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 251,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 3,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_searchchunk",
+   "key": "storage/EzyVectorFileStorage.java#searchChunk()",
+   "label": "EzyVectorFileStorage.searchChunk()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 255,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 3
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_cosinescore",
+   "key": "storage/EzyVectorFileStorage.java#cosineScore()",
+   "label": "EzyVectorFileStorage.cosineScore()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 300,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tovectorbuffer",
+   "key": "storage/EzyVectorFileStorage.java#toVectorBuffer()",
+   "label": "EzyVectorFileStorage.toVectorBuffer()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 314,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tolongbuffer",
+   "key": "storage/EzyVectorFileStorage.java#toLongBuffer()",
+   "label": "EzyVectorFileStorage.toLongBuffer()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 325,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_writefully",
+   "key": "storage/EzyVectorFileStorage.java#writeFully()",
+   "label": "EzyVectorFileStorage.writeFully()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 334,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 4,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_readfully",
+   "key": "storage/EzyVectorFileStorage.java#readFully()",
+   "label": "EzyVectorFileStorage.readFully()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 344,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validatevector",
+   "key": "storage/EzyVectorFileStorage.java#validateVector()",
+   "label": "EzyVectorFileStorage.validateVector()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 355,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validateslotid",
+   "key": "storage/EzyVectorFileStorage.java#validateSlotId()",
+   "label": "EzyVectorFileStorage.validateSlotId()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 369,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_normalize",
+   "key": "storage/EzyVectorFileStorage.java#normalize()",
+   "label": "EzyVectorFileStorage.normalize()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 377,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "layer": 6,
+   "in": 3,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult",
+   "key": "storage/EzyVectorFileStorage.java#SearchResult",
+   "label": "EzyVectorFileStorage.SearchResult",
+   "kind": "inner",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 393,
+   "layer": 6,
+   "in": 3,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult_searchresult",
+   "key": "storage/EzyVectorFileStorage.java#SearchResult.SearchResult()",
+   "label": "EzyVectorFileStorage.SearchResult.SearchResult()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 398,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult",
+   "layer": 6,
+   "in": 2,
+   "out": 0
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord",
+   "key": "storage/EzyVectorFileStorage.java#VectorRecord",
+   "label": "EzyVectorFileStorage.VectorRecord",
+   "kind": "inner",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 404,
+   "layer": 6,
+   "in": 3,
+   "out": 1
+  },
+  {
+   "id": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord_vectorrecord",
+   "key": "storage/EzyVectorFileStorage.java#VectorRecord.VectorRecord()",
+   "label": "EzyVectorFileStorage.VectorRecord.VectorRecord()",
+   "kind": "method",
+   "file": "storage/EzyVectorFileStorage.java",
+   "line": 410,
+   "owner": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord",
+   "layer": 6,
+   "in": 1,
+   "out": 0
+  }
+ ],
+ "edges": [
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "references",
+   "n": 3,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorpointmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorpointmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_hnswindex",
+   "r": "method",
+   "n": 3,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_remove",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getentrypointid",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getnodeids",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getnodelevel",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getneighborids",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getvector",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_size",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_save",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_writenode",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_writenode",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_readnode",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_readnode",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_removenode",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getmaxactivelevel",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_randomlevel",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_normalize",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevector",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevectorsize",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatesearchvectorsize",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_node",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_connect",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_setneighbors",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate_candidate",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult_searchresult",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep_searchstep",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace_searchtrace",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace_searchtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace_searchtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevector",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_normalize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevectorsize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_removenode",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_randomlevel",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_node",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_remove",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_remove",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getmaxactivelevel",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevector",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_normalize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatesearchvectorsize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult_searchresult",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatevector",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchtrace_searchtrace",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_normalize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_validatesearchvectorsize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep_searchstep",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchresult_searchresult",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_save",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_writenode",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_hnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_readnode",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_readnode",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_node",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_removenode",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_removenode",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getmaxactivelevel",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate_candidate",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_searchstep_searchstep",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_candidate_candidate",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_distance",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_connect",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel_vectors",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel_vectors",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_defaultezyvectorcollectionfilter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionfilter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_defaultezyvectorcollectionpointfilter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointfilter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_defaultezyvectorcollectionsegmentfilter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentfilter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionpaginationparameter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionpointpaginationparameter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionsegmentpaginationparameter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpaginationparameter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpointpaginationparameter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionsegmentpaginationparameter",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "r": "implements",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "references",
+   "n": 3,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_result_ezyvectorcollectionvectorsizeresult",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_result_ezyvectorcollectionvectorsizeresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointfilter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointfilter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionfilter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionfilter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentfilter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentfilter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorpointmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionsegmentrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_result_ezyvectorcollectionvectorsizeresult",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorsettingservice",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionsegmentrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorcollectionmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_model_savevectorpointmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_tosearchresults",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_tosearchresults",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_toexactsearchresults",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_toexactsearchresults",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorsearchresultmodel",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "t": "org_youngmonkeys_ezyvector_result_ezyvectorcollectionvectorsizeresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "r": "method",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "r": "method",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "r": "method",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_insertintohnswindex",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_insertintohnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_tosearchresults",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_toexactsearchresults",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_insertintohnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_insertintohnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointfilter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionpointmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointfilter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameter",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpoint",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionpointrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentfilter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionsegmentmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentfilter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameter",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionsegmentrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionfilter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_model_ezyvectorcollectionmodel",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionfilter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameter",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "references",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_repo_paginationezyvectorcollectionrepository",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ezyvectorfilestorage",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getbackfillprogress",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_savebackfillprogress",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ishnswpresent",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_searchchunk",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_searchchunk",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult",
+   "r": "references",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_cosinescore",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tovectorbuffer",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tolongbuffer",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_writefully",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_readfully",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validatevector",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validateslotid",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_normalize",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult_searchresult",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord",
+   "r": "contains",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_vectorrecord_vectorrecord",
+   "r": "method",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validateslotid",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validatevector",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_writefully",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tovectorbuffer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_normalize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tolongbuffer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validateslotid",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_writefully",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tolongbuffer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_validatevector",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_normalize",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_searchchunk",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getbackfillprogress",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getbackfillprogress",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_readfully",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_savebackfillprogress",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_savebackfillprogress",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_writefully",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_savebackfillprogress",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_tolongbuffer",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getsegmentdir",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ishnswpresent",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_searchchunk",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_cosinescore",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_searchchunk",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_searchresult_searchresult",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionpointstatus",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegmentstatus",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegmenttype",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionstatus",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollection",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice",
+   "t": "org_youngmonkeys_ezyvector_entity_ezyvectorcollectionsegment",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpointpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionsegmentpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpaginationparameter",
+   "r": "imports",
+   "n": 2,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionpointpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionpointpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpointpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_pagination_idascezyvectorcollectionsegmentpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_pagination_ezyvectorcollectionsegmentpaginationparameterconverter",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionsegmentpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpointpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionsegmentpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_pagination_iddescezyvectorcollectionpaginationparameter",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_connect",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchwithtrace",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getneighborids",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_findactiveentrypoint",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_getmaxactivelevel",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_searchlayer",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_neighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_pruneneighbors",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_node_setneighbors",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "calls",
+   "n": 2,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_createcollectionifabsent",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "r": "calls",
+   "n": 2,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_upsert",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletepoints",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_deleteall",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_search",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_search",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_search",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_tosearchresults",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_tosearchresults",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_toexactsearchresults",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_toexactsearchresults",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getvectorsizeresultentitybynameorthrow",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionsegmentrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_ensuremutablesegment",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectormodeltoentityconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getbackfillprogress",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_startbackfillifnecessary",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_getbackfillprogress",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_upsertall",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_backfillcollection",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_savebackfillprogress",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ishnswpresent",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_starthnswbuildifnecessary",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_ishnswpresent",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_load",
+   "r": "calls",
+   "n": 1,
+   "inferred": false
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_getreadyhnswindex",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_save",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_updatehnswindex",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_remove",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_save",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_deletefromhnswindex",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "t": "org_youngmonkeys_ezyvector_repo_ezyvectorcollectionpointrepository",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_save",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_buildhnswindex",
+   "t": "org_youngmonkeys_ezyvector_storage_ezyvectorfilestorage_ezyvectorfilestorage_gethnswpath",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_insertintohnswindex",
+   "t": "org_youngmonkeys_ezyvector_hnsw_hnswindex_hnswindex_insert",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_ezyvectorservice_ezyvectorservice_newvectorfilestorage",
+   "t": "org_youngmonkeys_ezyvector_service_ezyvectorsettingservice",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionpointservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionsegmentservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  },
+  {
+   "s": "org_youngmonkeys_ezyvector_service_paginationezyvectorcollectionservice",
+   "t": "org_youngmonkeys_ezyvector_converter_ezyvectorentitytomodelconverter",
+   "r": "calls",
+   "n": 1,
+   "inferred": true
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+  "titulo": "ezyvector-sdk — đồ thị mã",
+  "contexto": "Lõi vector database của plugin EzyVector cho EzyPlatform: MySQL là nguồn sự thật, file theo slot để quét chính xác khi index chưa sẵn sàng, HNSW trong RAM (+ hnsw.dat) để tìm kiếm xấp xỉ nhanh.",
+  "intro": "ezyvector-sdk lưu mỗi collection ở 3 nơi song song. MySQL (bảng ezyvector_collections / _points / _segments) là nguồn sự thật. File vectors.dat + point_ids.dat lưu vector đã chuẩn hóa theo slot (= id dòng DB), phục vụ tìm kiếm tuần tự chính xác khi index chưa sẵn sàng. Index HNSW trong RAM, ghi ra hnsw.dat, phục vụ tìm kiếm xấp xỉ nhanh. EzyVectorService điều phối cả 3 tầng và tự chạy thread nền (backfill DB→file, build DB→HNSW). Web-plugin kế thừa service này để phục vụ API upsert/delete/search; admin-plugin chỉ dùng repo/pagination để liệt kê.",
+  "curated_against": "27e4def",
+  "rule": "Lane số nhỏ (vẽ ở trên) chỉ được phụ thuộc lane số lớn hơn (vẽ ở dưới). Cạnh đi ngược lên bị tô đỏ là vi phạm. Lane 0 là dùng chung nên được miễn.",
+  "layers": [
+    {"id": 0, "name": "Dùng chung", "sub": "hằng số, tên bảng, enum distance (được dùng qua static import, AST không thấy)"},
+    {"id": 1, "name": "Service", "sub": "điều phối: EzyVectorService (+ method), setting, collection, pagination service"},
+    {"id": 2, "name": "Converter", "sub": "entity ↔ model ↔ kết quả search"},
+    {"id": 3, "name": "Repository", "sub": "truy cập MySQL (EzyDatabaseRepository, CommonPaginationRepository)"},
+    {"id": 4, "name": "Pagination", "sub": "filter / tham số / sort order / converter, sinh bởi PaginationClassesGenerator"},
+    {"id": 5, "name": "Dữ liệu domain", "sub": "entity JPA, model, query result"},
+    {"id": 6, "name": "Engine vector", "sub": "HnswIndex (đồ thị HNSW) và EzyVectorFileStorage (file slot)"}
+  ]
+}

@@ -1,0 +1,1508 @@
+{
+ "service/EzyVectorService.java": {
+  "character": "Service điều phối có trạng thái (stateful): giữ index HNSW và các tập ready/building/backfilling trong RAM theo collectionId, nên mỗi tiến trình phải có ĐÚNG MỘT instance. Chỉ web-plugin kế thừa (WebEzyVectorService, @EzySingleton); admin-plugin không dùng class này.",
+  "what": "Cửa vào duy nhất cho thao tác vector: createCollectionIfAbsent, upsert, deletePoints, search. Mỗi thao tác ghi đồng bộ 3 tầng: MySQL (nguồn sự thật), file theo slot (vectors.dat / point_ids.dat) và index HNSW trong RAM + hnsw.dat. Tự bật 2 loại thread nền cho từng collection: backfill (DB → file) và build HNSW (DB → RAM → hnsw.dat).",
+  "why": "Thiếu nó thì 3 tầng lưu trữ lệch nhau: DB có point mà search không thấy, hoặc search trả về point đã xóa. Đây cũng là nơi duy nhất chọn đường search: HNSW (nhanh, xấp xỉ) khi index đã ready, quét tuần tự file (chính xác, chậm) khi chưa.",
+  "ux": "Client của web API chỉ thấy upsert/delete/search theo tên collection. Request đầu tiên tới mỗi collection sau khi restart chậm hơn hẳn vì phải nạp toàn bộ hnsw.dat ngay trong request đó.",
+  "when": "Mỗi request upsert/delete/search của WebApiEzyVectorCollectionController đi qua đây. Toàn bộ trạng thái RAM mất khi restart, nên request đầu tiên của mỗi collection quyết định: có hnsw.dat hợp lệ → nạp và ready ngay; không có/hỏng/sai vectorSize → bật thread build, trong lúc build thì search đi đường quét file.",
+  "if_broken": "Search lỗi hoặc rỗng cho mọi collection. Dữ liệu vẫn an toàn trong DB vì file và HNSW đều dựng lại được từ DB.",
+  "concurrency": "Một writeLock (Object) dùng chung cho MỌI collection: upsert/delete và từng batch backfill của các collection khác nhau phải xếp hàng nối tiếp. Các tập trạng thái là ConcurrentHashMap/newKeySet. Thread build HNSW KHÔNG lấy writeLock (xem buildHnswIndex). Thread nền là daemon, tạo bằng new Thread (không có pool), tên ezyvector-vector-backfill-{id} và ezyvector-vector-hnsw-build-{id}.",
+  "gotchas": [
+   "Thiết kế cho một node duy nhất: chạy 2 instance web-plugin trên cùng thư mục dữ liệu thì mỗi bên giữ một HNSW riêng trong RAM và ghi đè hnsw.dat của nhau.",
+   "Không có transaction xuyên 3 tầng: lỗi giữa chừng để lại DB đã ghi mà file/HNSW chưa ghi (xem upsert, deletePoints).",
+   "Index của collection không bao giờ bị gỡ khỏi RAM: bộ nhớ tăng theo tổng số vector của mọi collection đã từng được truy cập."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#createCollectionIfAbsent()": {
+  "character": "Thao tác công khai, idempotent theo tên collection.",
+  "what": "Tìm collection theo tên; nếu chưa có thì tạo entity từ model (vectorSize, distance, indexType=HNSW, status=ACTIVATED) và lưu. Sau đó luôn đảm bảo có segment số 1 rồi kích hoạt backfill và build HNSW nếu cần.",
+  "why": "Thiếu bước ensureMutableSegment/startHnswBuild ở đây thì collection mới chưa có index: search đầu tiên phải tự dựng, và collection cũ (tạo trước khi có segment/HNSW) không được nâng cấp.",
+  "ux": "Gọi lại với cùng tên là an toàn, không lỗi trùng tên. Nhưng tham số mới bị bỏ qua (xem gotchas).",
+  "when": "Do API tạo collection của web-plugin gọi. Collection rỗng mới tạo sẽ ready gần như ngay: thread build không có point nào nên lưu ngay một hnsw.dat rỗng và đánh dấu ready, từ đó mọi search đi đường HNSW.",
+  "if_broken": "Không tạo được collection, nên upsert/search sau đó ném 'You need to setup MySQL vector database first'.",
+  "concurrency": "Không lấy writeLock: hai request cùng tên chạy song song có thể cùng thấy null; request thứ hai sẽ vướng unique key 'name' ở DB và ném lỗi.",
+  "gotchas": [
+   "Collection đã tồn tại thì model bị BỎ QUA hoàn toàn: gọi lại với vectorSize khác vẫn trả về thành công mà không đổi gì, lỗi sai kích thước chỉ lộ ra lúc upsert/search."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#upsert()": {
+  "character": "Thao tác ghi công khai, theo batch.",
+  "what": "Tra id + vectorSize của collection, đảm bảo có segment, kích hoạt backfill/build nếu cần. Trong writeLock: với từng point, tìm entity theo (collectionId, pointId) để merge (version+1) hoặc tạo mới, rồi save vào DB; gom VectorRecord(slotId = id dòng DB, pointId, vector); sau đó ghi cả batch vào file storage và chèn vào HNSW (lưu hnsw.dat nếu đã ready). Ngoài lock gọi startHnswBuildIfNecessary một lần nữa.",
+  "why": "Thiếu bước ghi file/HNSW trong cùng lock thì point mới chỉ nằm trong DB: search không thấy cho tới khi backfill hay build lần sau quét tới.",
+  "ux": "Point mới upsert xuất hiện trong search ngay khi request trả về. Nhưng mỗi request phải chờ ghi lại TOÀN BỘ hnsw.dat (xem gotchas), nên độ trễ upsert tăng theo kích thước collection.",
+  "when": "API upsert points của web-plugin. Lần gọi startHnswBuildIfNecessary thứ hai (sau lock) thường không làm gì, vì index đã ready hoặc đang build.",
+  "if_broken": "Không ghi được point mới; nếu chỉ hỏng nửa sau thì DB có dữ liệu mà search không thấy.",
+  "concurrency": "Toàn bộ ghi DB + file + HNSW nằm trong writeLock toàn cục, nên upsert song song (kể cả khác collection) bị tuần tự hóa. Mỗi point một câu SELECT + một câu SAVE riêng (N+1) ngay trong lock.",
+  "gotchas": [
+   "LỖI: DB được save TRƯỚC khi kiểm tra kích thước vector. Kiểm tra chỉ diễn ra trong EzyVectorFileStorage.upsertAll, và web validator cũng không kiểm tra kích thước. Một point sai kích thước làm request ném IllegalArgumentException nhưng các dòng đã lưu vẫn nằm trong DB, file chỉ ghi được một phần và HNSW không được cập nhật. Dòng sai kích thước đó còn làm backfill kẹt vĩnh viễn (xem backfillCollection).",
+   "Khi đã ready, updateHnswIndex ghi lại toàn bộ hnsw.dat trên MỖI lần upsert (O(số node × (dim + M))), dù batch chỉ có 1 point.",
+   "slotId là id tự tăng toàn cục của bảng ezyvector_collection_points (dùng chung cho mọi collection), không phải số thứ tự trong collection."
+  ],
+  "issue": "bug",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#deletePoints()": {
+  "character": "Thao tác ghi công khai, xóa cứng theo batch.",
+  "what": "Trong writeLock: tra từng pointId trong DB (bỏ qua id không tồn tại), ghi tombstone vào point_ids.dat theo slotId, soft-delete các node trong HNSW (lưu hnsw.dat nếu ready), rồi xóa cứng từng dòng DB.",
+  "why": "Thiếu một trong 3 bước thì point đã xóa vẫn hiện trong search: file có thể vẫn chấm điểm nó, HNSW có thể vẫn trả về nó, còn DB có thể vẫn trả payload của nó.",
+  "ux": "Point biến khỏi kết quả search ngay khi request trả về. Xóa id không tồn tại không báo lỗi.",
+  "when": "API delete points của web-plugin (thêm ở commit a791c9c 'delete vector (#2)').",
+  "if_broken": "Point đã xóa tiếp tục xuất hiện trong search, có khi với payload null (xem toSearchResults).",
+  "concurrency": "Nằm trong writeLock toàn cục. Nhưng thread build HNSW không lấy lock này, nên có thể chèn lại một point vừa bị xóa (xem buildHnswIndex).",
+  "gotchas": [
+   "Thứ tự file → HNSW → DB và không có transaction: nếu xóa DB lỗi giữa chừng thì point mất khỏi search nhưng vẫn còn trong DB. Backfill không đưa nó trở lại file vì cursor đã vượt qua id này; chỉ lần dựng lại HNSW sau đó (đọc từ DB) mới làm nó xuất hiện lại.",
+   "Xóa cứng nên enum EzyVectorCollectionPointStatus.DELETED không bao giờ được dùng."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#search()": {
+  "character": "Thao tác đọc công khai.",
+  "what": "Tra id + vectorSize, kích hoạt backfill/build nếu cần. Nếu index đã ready: HNSW search với k=limit, ef=max(limit×8, 64), rồi toSearchResults. Ngược lại: quét tuần tự file bằng EzyVectorFileStorage.search rồi toExactSearchResults. Score là cosine similarity (1 − distance).",
+  "why": "Thiếu nhánh dự phòng thì collection đang build HNSW (sau khi file hỏng hoặc khi nâng cấp) sẽ không search được. Thiếu hệ số ef thì HNSW chỉ khám phá đúng k ứng viên, nên recall giảm rõ rệt.",
+  "ux": "Client không biết mình đang được phục vụ bởi đường nào. Đường quét file chính xác tuyệt đối nhưng chậm tuyến tính theo slot lớn nhất, và có thể THIẾU point nếu backfill chưa xong.",
+  "when": "API search của web-plugin, mỗi request. Request đầu tiên sau restart nạp hnsw.dat đồng bộ ngay trong startHnswBuildIfNecessary.",
+  "if_broken": "Tính năng truy vấn chính (RAG/semantic search) của plugin ngừng hoạt động.",
+  "concurrency": "Không lấy writeLock; HNSW tự bảo vệ bằng read lock, còn file storage đọc không khóa (có thể đọc trúng một vector đang ghi dở).",
+  "gotchas": [
+   "Hằng số 8 và 64 lấy từ EzyVectorConstants (EXPLORATION_FACTOR_SEARCH_MULTIPLIER, MIN_EXPLORATION_FACTOR_SEARCH) qua static import, nên đồ thị AST không vẽ được cạnh này.",
+   "Mọi search đều chạy startBackfillIfNecessary, tức thêm 1 lần đọc file progress + 1 câu SELECT mỗi request."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#toSearchResults()": {
+  "character": "Helper private, ánh xạ kết quả.",
+  "what": "Với từng hit HNSW (id = pointId của client), tìm entity theo (collectionId, pointId) rồi chuyển thành EzyVectorSearchResultModel (chunkId, score, payload đã parse từ JSON).",
+  "why": "Thiếu bước này thì client chỉ nhận id + score mà không có payload (đoạn văn bản, metadata), vô dụng cho RAG.",
+  "ux": "Client nhận payload kèm mỗi kết quả. Nếu dòng DB không còn (race khi xóa) thì kết quả vẫn có nhưng payload = null.",
+  "when": "Chỉ chạy ở nhánh HNSW của search.",
+  "if_broken": "Search trả về lỗi hoặc thiếu payload.",
+  "gotchas": [
+   "N+1 query: mỗi hit một câu SELECT riêng, nên limit lớn thì độ trễ tăng tuyến tính.",
+   "DUPLICATE: gần như giống hệt toExactSearchResults (chỉ khác kiểu hit). Sửa một bên không sang được bên kia."
+  ],
+  "issue": "duplicate",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#toExactSearchResults()": {
+  "character": "Helper private, ánh xạ kết quả.",
+  "what": "Giống toSearchResults nhưng cho hit của EzyVectorFileStorage.SearchResult (id = pointId đọc từ point_ids.dat): tìm entity theo (collectionId, pointId) rồi chuyển thành EzyVectorSearchResultModel.",
+  "why": "Thiếu bước này thì đường quét file không trả được payload.",
+  "ux": "Như toSearchResults; payload null nếu dòng DB đã mất.",
+  "when": "Chỉ chạy ở nhánh dự phòng (index chưa ready) của search.",
+  "if_broken": "Search trong lúc build HNSW trả lỗi hoặc thiếu payload.",
+  "gotchas": [
+   "DUPLICATE của toSearchResults: hai vòng lặp N+1 giống hệt nhau, chỉ khác kiểu tham số, vì không có interface chung cho HnswIndex.SearchResult và EzyVectorFileStorage.SearchResult."
+  ],
+  "issue": "duplicate",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#getVectorSizeResultEntityByNameOrThrow()": {
+  "character": "Helper private, guard.",
+  "what": "Lấy (id, vectorSize) của collection theo tên bằng câu query chiếu 2 cột (findVectorSizeByName); không có thì ném IllegalStateException('You need to setup MySQL vector database first').",
+  "why": "Thiếu guard này thì upsert/delete/search trên collection không tồn tại sẽ ném NullPointerException thay vì một lỗi có ý nghĩa.",
+  "ux": "Client gọi sai tên collection nhận lỗi 'You need to setup MySQL vector database first'. Thông điệp này gây hiểu nhầm, vì nguyên nhân thật là sai tên collection chứ không phải chưa cài DB.",
+  "when": "Dòng đầu tiên của upsert, deletePoints, search.",
+  "if_broken": "Mọi thao tác vector theo tên đều lỗi.",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#ensureMutableSegment()": {
+  "character": "Helper private, idempotent (2 overload: theo tên và theo id, AST gộp làm một node).",
+  "what": "Nếu collection chưa có segment số 1 (FIRST_SEGMENT_NO) thì tạo một EzyVectorCollectionSegment loại MUTABLE, trạng thái ACTIVE, indexVersion=1.",
+  "why": "Thiếu nó thì bảng ezyvector_collection_segments trống, và admin-plugin (trang liệt kê segment) không hiển thị gì. Phần vector KHÔNG phụ thuộc vào dòng này: file storage hardcode segment 000001 riêng.",
+  "ux": "Admin thấy đúng một segment cho mỗi collection.",
+  "when": "createCollectionIfAbsent và đầu mỗi upsert (thêm 1 câu SELECT mỗi upsert).",
+  "if_broken": "Chỉ trang segment của admin bị trống; ghi/đọc vector vẫn chạy.",
+  "concurrency": "Kiểm tra rồi mới tạo, không khóa: hai upsert đầu tiên chạy song song có thể cùng tạo, và cái thứ hai vướng unique key (collection_id, segment_no).",
+  "gotchas": [
+   "Segment luôn là số 1. Các cột points_count/min_point_id/max_point_id không bao giờ được cập nhật, và các trạng thái BUILDING/COMPACTING/OBSOLETE/CORRUPTED chưa được dùng: đây mới là khung cho thiết kế nhiều segment trong tương lai."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#startBackfillIfNecessary()": {
+  "character": "Helper private, cổng khởi động thread nền (2 overload: theo tên và theo id+vectorSize).",
+  "what": "Đọc cursor backfill.progress của collection; nếu DB còn ít nhất 1 point có id > cursor và collection chưa có thread backfill nào thì bật thread daemon chạy backfillCollection.",
+  "why": "Thiếu nó thì file vectors.dat không bao giờ bắt kịp DB cho các point ghi trước khi có file storage, hoặc ghi lúc file bị xóa/hỏng, nên đường search dự phòng thiếu dữ liệu.",
+  "ux": "Vô hình. Chỉ thấy qua log và thread ezyvector-vector-backfill-{id}.",
+  "when": "createCollectionIfAbsent, đầu mỗi upsert và MỖI search. Tức mỗi search trả thêm 1 lần đọc file + 1 câu SELECT LIMIT 1.",
+  "if_broken": "Đường quét file thiếu point cũ; HNSW không bị ảnh hưởng vì nó build từ DB.",
+  "concurrency": "backfillingCollectionIds.add() làm cờ một-thread-mỗi-collection. Không có backoff: nếu backfill liên tục thất bại thì mỗi request lại bật một thread mới (xem backfillCollection).",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#backfillCollection()": {
+  "character": "Thân thread nền (Runnable), chạy dài, tự dọn cờ trong finally.",
+  "what": "Từ cursor hiện tại, đọc DB theo trang 500 dòng (id tăng dần), ghi mỗi trang vào file storage trong writeLock, rồi lưu cursor = id cuối của trang ra backfill.progress. Dừng khi hết dòng; lỗi thì log warn.",
+  "why": "Thiếu nó thì các point đã có trong DB (trước khi có tầng file, hoặc sau khi xóa thư mục dữ liệu) không bao giờ có trong vectors.dat, nên search dự phòng trả thiếu kết quả.",
+  "ux": "Vô hình. Trong lúc backfill chưa xong thì search dự phòng có thể thiếu point.",
+  "when": "Chạy trên thread ezyvector-vector-backfill-{collectionId} do startBackfillIfNecessary bật.",
+  "if_broken": "File storage không đồng bộ với DB, nên kết quả đường dự phòng sai lệch.",
+  "concurrency": "Chỉ giữ writeLock trong lúc ghi từng trang; việc đọc DB và lưu cursor nằm ngoài lock. Upsert xen giữa có thể ghi cùng slot, nhưng ghi lại cùng một slot là idempotent.",
+  "gotchas": [
+   "LỖI: một dòng DB có vector sai kích thước (upsert không chặn được, xem upsert) làm upsertAll ném lỗi. Cursor không bao giờ vượt qua trang đó, và vì mỗi search/upsert gọi startBackfillIfNecessary nên mỗi request lại bật một thread mới, thất bại lại, log warn lặp vô hạn.",
+   "Cursor là id dòng DB (slotId), không phải pointId."
+  ],
+  "issue": "bug",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#startHnswBuildIfNecessary()": {
+  "character": "Helper private, cổng nạp/dựng index (2 overload: theo tên và theo id+vectorSize).",
+  "what": "Nếu collection đã ready thì thoát. Nếu có hnsw.dat thì nạp ĐỒNG BỘ; vectorSize khớp thì đặt vào map + ready, sai thì log rồi rơi xuống dựng lại. Nếu chưa có thread build: tạo HnswIndex rỗng (M=16, efConstruction=200, vectorSize), đặt NGAY vào map để upsert đồng thời chèn được vào, rồi bật thread buildHnswIndex.",
+  "why": "Thiếu nó thì sau restart không có index nào trong RAM, mọi search rơi về quét file tuyến tính; và một hnsw.dat hỏng/sai kích thước sẽ không bao giờ được dựng lại.",
+  "ux": "Request đầu tiên sau restart của mỗi collection phải chờ nạp toàn bộ hnsw.dat ngay trong request (thời gian tỉ lệ với kích thước file).",
+  "when": "createCollectionIfAbsent, upsert (2 lần), search, và getReadyHnswIndex khi nạp lại thất bại.",
+  "if_broken": "Không bao giờ có index, nên mọi search chậm (quét file) và có thể thiếu kết quả.",
+  "concurrency": "Kiểm tra ready rồi nạp file mà không khóa: hai request đầu tiên chạy song song có thể cùng nạp hnsw.dat, instance nạp sau đè lên instance trước trong map. Nếu đúng lúc đó có upsert chèn vào instance trước thì thay đổi ấy mất khỏi RAM (dù đã ghi vào DB và file).",
+  "gotchas": [
+   "Khi hnsw.dat còn tồn tại nhưng hỏng hoặc sai vectorSize: trong suốt thời gian build lại, MỖI request vẫn nạp lại toàn bộ file cũ (vì chưa ready và file vẫn còn) rồi mới phát hiện lỗi lần nữa. Tốn IO và RAM.",
+   "Collection có hnsw.dat cũ nhưng DB đã bị dọn ngoài luồng sẽ phục vụ dữ liệu cũ, vì index nạp từ file không được đối chiếu lại với DB."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#getReadyHnswIndex()": {
+  "character": "Helper private, chỉ đọc (nhưng có thể kích hoạt build lại).",
+  "what": "Trả index nếu collection đã ready; nếu ready mà map không có index thì thử nạp lại từ hnsw.dat, nạp lỗi thì bỏ cờ ready và gọi startHnswBuildIfNecessary.",
+  "why": "Thiếu nó thì search có thể dùng một index đang build dở (chưa đủ point) và trả thiếu kết quả mà không biết.",
+  "ux": "Vô hình. Quyết định search đi đường HNSW hay đường quét file.",
+  "when": "Mỗi search, ngay sau startHnswBuildIfNecessary.",
+  "if_broken": "Search luôn đi đường quét file (chậm), hoặc dùng index chưa hoàn chỉnh.",
+  "gotchas": [
+   "Nhánh 'ready nhưng map rỗng' gần như không thể xảy ra trong code hiện tại: index luôn được đặt vào map trước khi thêm cờ ready, và không bao giờ bị gỡ khỏi map. Đó là nhánh phòng thủ."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#updateHnswIndex()": {
+  "character": "Helper private, ghi.",
+  "what": "Nếu collection có index trong map (ready hoặc đang build) thì chèn từng record theo pointId; nếu đã ready thì lưu lại toàn bộ hnsw.dat.",
+  "why": "Thiếu nó thì point mới upsert chỉ hiện trong search sau lần dựng lại index kế tiếp.",
+  "ux": "Point mới tìm thấy được ngay qua HNSW. Đổi lại upsert chậm dần khi collection lớn lên (ghi lại cả file mỗi lần).",
+  "when": "Cuối upsert, trong writeLock.",
+  "if_broken": "Index HNSW cũ dần so với DB cho tới lần restart có hnsw.dat bị xóa.",
+  "concurrency": "Chạy trong writeLock của service; HnswIndex.insert lấy thêm write lock của index; save giữ read lock của index trong suốt lúc ghi file, nên chặn mọi insert khác vào index đó.",
+  "gotchas": [
+   "Khi đang build (chưa ready): chèn vào index nhưng KHÔNG lưu. Thread build sau đó có thể chèn đè bằng vector cũ đọc từ DB trước đó (xem buildHnswIndex)."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#deleteFromHnswIndex()": {
+  "character": "Helper private, ghi.",
+  "what": "Soft-delete từng pointId trong index (node vẫn còn trong đồ thị để định tuyến); nếu đã ready thì lưu lại toàn bộ hnsw.dat.",
+  "why": "Thiếu nó thì point đã xóa vẫn được HNSW trả về, nhưng với payload null vì dòng DB đã mất.",
+  "ux": "Point đã xóa không còn xuất hiện trong search HNSW.",
+  "when": "Trong deletePoints, sau khi ghi tombstone file, trước khi xóa DB.",
+  "if_broken": "Kết quả search chứa point 'ma' (có score, payload null).",
+  "gotchas": [
+   "Node bị soft-delete tích lũy mãi trong RAM và trong hnsw.dat; chỉ mất khi index được dựng lại từ DB."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#buildHnswIndex()": {
+  "character": "Thân thread nền (Runnable), chạy dài, tự dọn cờ trong finally.",
+  "what": "Lấy index rỗng đã đặt sẵn trong map, đọc DB theo trang 500 dòng từ id 0, chèn từng point (pointId, vector) vào index, rồi lưu hnsw.dat và đánh dấu ready.",
+  "why": "Thiếu nó thì không bao giờ có hnsw.dat hợp lệ khi file mất/hỏng/sai kích thước, nên search vĩnh viễn đi đường quét file.",
+  "ux": "Vô hình. Trong lúc build, search chậm hơn (quét file). Khi build xong, search nhanh trở lại.",
+  "when": "Thread ezyvector-vector-hnsw-build-{collectionId}, bật bởi startHnswBuildIfNecessary.",
+  "if_broken": "Collection kẹt ở chế độ quét file; lỗi chỉ được log warn rồi lần request sau thử lại từ đầu.",
+  "concurrency": "LỖI race: thread này KHÔNG lấy writeLock của service. Nó đọc một trang từ DB rồi mới chèn từng point; nếu deletePoints chạy chen giữa (remove() là no-op vì point chưa có trong index) thì point đã xóa vẫn được chèn vào và sống lại trong HNSW, search trả về với payload null. Tương tự, upsert chạy chen giữa có thể bị đè bởi vector cũ đọc từ DB trước đó.",
+  "gotchas": [
+   "Chèn từng point một dưới write lock của index, nên thời gian build tỉ lệ với số point. Mọi search trong thời gian đó đi đường quét file."
+  ],
+  "issue": "bug",
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#insertIntoHnswIndex()": {
+  "character": "Helper private, chèn có bắt lỗi.",
+  "what": "Gọi HnswIndex.insert(pointId, vector); nếu IllegalArgumentException (vector rỗng/sai kích thước) thì log warn 'skip vector point' và bỏ qua.",
+  "why": "Thiếu bước bắt lỗi thì một dòng vector hỏng trong DB làm hỏng cả lần build, và index không bao giờ ready.",
+  "ux": "Vô hình. Point có vector hỏng không bao giờ tìm thấy qua HNSW, chỉ có dấu vết trong log.",
+  "when": "Mỗi point trong buildHnswIndex và updateHnswIndex.",
+  "if_broken": "Một vector hỏng chặn toàn bộ build/upsert của collection.",
+  "gotchas": [
+   "Bất đối xứng: ở đây vector sai kích thước bị BỎ QUA, còn trong backfillCollection nó làm cả quá trình thất bại."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "service/EzyVectorService.java#newVectorFileStorage()": {
+  "character": "Factory private, tạo object mới mỗi lần gọi (stateless).",
+  "what": "Tạo EzyVectorFileStorage mới với thư mục dữ liệu = EZYPLATFORM_HOME + setting 'ezyrag_vector_data_dir' (mặc định data/ezyvector).",
+  "why": "Thiếu nó thì thư mục dữ liệu bị hardcode; đọc setting mỗi lần gọi cho phép admin đổi thư mục mà không cần restart.",
+  "ux": "Đổi setting thư mục khi đang chạy làm collection 'mất' file/HNSW (thư mục mới trống), nên backfill/build chạy lại từ đầu.",
+  "when": "Gọi ~11 nơi trong service; mỗi upsert/search tạo nhiều instance mới.",
+  "if_broken": "Không đọc/ghi được file nào; search dự phòng và hnsw.dat đều hỏng.",
+  "gotchas": [
+   "Tên setting có tiền tố 'ezyrag_' (khác các setting 'ezyvector_' khác), có vẻ là di sản từ dự án EzyRAG. Đổi tên sẽ làm mất cấu hình đã lưu của các bản cài hiện có."
+  ],
+  "curated_sha": "b0de0fa9f2b9"
+ },
+ "storage/EzyVectorFileStorage.java": {
+  "character": "Lớp truy cập file, không giữ trạng thái ngoài đường dẫn gốc: tạo mới thoải mái (service tạo một instance cho mỗi lần gọi). Không tự khóa; an toàn ghi dựa hoàn toàn vào writeLock của EzyVectorService.",
+  "what": "Quản lý thư mục {EZYPLATFORM_HOME}/{dataDir}/collections/{collectionId}/segments/000001/ gồm: vectors.dat (float32 little-endian, vector đã chuẩn hóa, slot s nằm ở offset (s-1)×dim×4), point_ids.dat (int64 LE, pointId của client tại offset (s-1)×8, 0 = tombstone), backfill.progress (một int64 LE = cursor), và đường dẫn hnsw.dat. Hỗ trợ ghi/xóa theo slot và tìm kiếm brute-force cosine bằng mmap theo khối 128 MB.",
+  "why": "Thiếu tầng file thì trong lúc HNSW đang build (sau restart mất file, file hỏng, sai vectorSize), search không có đường nào ngoài việc quét MySQL; và không có nơi lưu cursor backfill.",
+  "ux": "Vô hình với client. Chỉ lộ ra như một search chậm nhưng chính xác khi index chưa ready.",
+  "when": "Mọi upsert/delete (ghi trong writeLock), mọi search dự phòng, mỗi lần kiểm tra/khởi động backfill, và mỗi lần service cần đường dẫn hnsw.dat.",
+  "if_broken": "Search dự phòng trả rỗng/sai; upsert/delete ném IOException sau khi DB đã ghi (3 tầng lệch nhau); service không tìm được hnsw.dat, nên phải build lại index mỗi lần restart.",
+  "concurrency": "Không khóa nội bộ. Ghi được tuần tự hóa nhờ writeLock của service; search đọc song song với ghi, có thể chấm điểm một vector đang ghi dở (sai lệch nhỏ, không crash).",
+  "gotchas": [
+   "Slot = id tự tăng TOÀN CỤC của bảng ezyvector_collection_points. Collection tạo sau cùng có các slot bắt đầu ở id lớn, nên vectors.dat có một 'lỗ' lớn ở đầu file. Search vẫn mmap và duyệt qua toàn bộ vùng đó (bỏ qua pointId=0), nên chậm theo slot lớn nhất chứ không theo số point.",
+   "Không có compaction: xóa chỉ ghi tombstone, còn upsert lại point đã xóa tạo dòng DB mới với slot mới. File chỉ lớn lên.",
+   "Byte order: little-endian, trong khi hnsw.dat (HnswIndex) dùng DataOutputStream big-endian. Đặc tả đầy đủ có trong EzyVector.md."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#EzyVectorFileStorage()": {
+  "character": "Constructor.",
+  "what": "Chuyển dataDir (tương đối, lấy từ setting) thành đường dẫn tuyệt đối dưới EZYPLATFORM_HOME qua FileSystemManager.concatWithEzyHome.",
+  "why": "Thiếu bước này thì dữ liệu vector rơi vào thư mục làm việc hiện tại của JVM, và mất sau mỗi lần deploy/khởi động từ chỗ khác.",
+  "ux": "Vô hình.",
+  "when": "Mỗi lần EzyVectorService.newVectorFileStorage() chạy, tức nhiều lần trong mỗi request.",
+  "if_broken": "Mọi thao tác file trỏ sai thư mục: không tìm thấy hnsw.dat cũ, build lại từ đầu, file mới rải ở chỗ khác.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#upsertAll()": {
+  "character": "Thao tác ghi công khai, theo batch, có fsync.",
+  "what": "Tạo thư mục segment nếu thiếu, mở vectors.dat và point_ids.dat (CREATE, WRITE). Với mỗi record: kiểm tra slotId > 0 và độ dài vector = vectorSize, ghi vector đã chuẩn hóa vào offset slot, ghi pointId vào point_ids.dat. Cuối cùng force(true) cả hai file.",
+  "why": "Thiếu nó thì đường search dự phòng không có dữ liệu cho point mới. Thiếu bước chuẩn hóa thì cosineScore (chỉ là tích vô hướng) sai với vector chưa có độ dài 1.",
+  "ux": "Mỗi upsert trả thêm chi phí fsync 2 file; trên ổ chậm, đây là phần đáng kể của độ trễ upsert.",
+  "when": "EzyVectorService.upsert (trong writeLock) và backfillCollection (từng trang 500 dòng).",
+  "if_broken": "File không khớp DB; search dự phòng thiếu hoặc sai point.",
+  "concurrency": "Không khóa; gọi chỉ trong writeLock của service.",
+  "gotchas": [
+   "LỖI: không kiểm tra pointId > 0. Point có id 0 (hoặc âm) được ghi vào point_ids.dat đúng bằng giá trị tombstone, nên searchChunk bỏ qua nó: point vẫn tìm thấy qua HNSW nhưng biến mất ở đường quét file. Web validator chỉ chặn id <= 0 cho API delete, không chặn cho API upsert.",
+   "Kiểm tra kích thước nằm TRONG vòng lặp: record sai kích thước ở giữa batch thì các record trước nó đã được ghi (chưa fsync) còn các record sau thì không.",
+   "Đây là nơi DUY NHẤT trong luồng upsert kiểm tra kích thước vector, nhưng nó chạy SAU khi DB đã save (xem EzyVectorService.upsert)."
+  ],
+  "issue": "bug",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#deleteAll()": {
+  "character": "Thao tác ghi công khai, theo batch, có fsync.",
+  "what": "Nếu point_ids.dat tồn tại thì ghi 0 (tombstone) vào offset của từng slotId, rồi force(true). vectors.dat không bị đụng tới.",
+  "why": "Thiếu nó thì point đã xóa vẫn được quét và trả về ở đường search dự phòng, với payload null vì dòng DB đã mất.",
+  "ux": "Point biến khỏi kết quả search dự phòng ngay sau request delete.",
+  "when": "Bước đầu tiên của EzyVectorService.deletePoints, trong writeLock.",
+  "if_broken": "Đường dự phòng trả về point 'ma'.",
+  "gotchas": [
+   "Vector cũ vẫn còn trong vectors.dat; dung lượng không bao giờ được thu hồi.",
+   "Không kiểm tra slot có nằm trong file hay không: slotId vượt cuối file sẽ kéo dài point_ids.dat bằng các số 0."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#search()": {
+  "character": "Thao tác đọc công khai, brute-force, chính xác tuyệt đối.",
+  "what": "Kiểm tra kích thước query, chuẩn hóa query, tính slotCount = min(số slot của vectors.dat, của point_ids.dat), rồi duyệt từng khối tối đa 128 MB (MAX_MAPPED_BYTES) qua searchChunk, giữ top-k bằng min-heap. Trả kết quả sắp theo score giảm dần.",
+  "why": "Thiếu nó thì collection đang build HNSW (thường là collection lớn nhất, build lâu nhất) không search được.",
+  "ux": "Kết quả chính xác 100% so với dữ liệu ĐÃ có trong file; thời gian tỉ lệ với slot lớn nhất × dim. Có thể thiếu point nếu backfill chưa chạy xong.",
+  "when": "Chỉ khi EzyVectorService.search thấy index chưa ready (không có hnsw.dat hợp lệ và đang build).",
+  "if_broken": "Search trong lúc build lỗi hoặc rỗng.",
+  "concurrency": "Đọc không khóa, song song với upsert/backfill.",
+  "gotchas": [
+   "LỖI: new PriorityQueue<>(limit, ...) cấp phát trước mảng kích thước limit, mà web validator chỉ chặn limit <= 0. Một request search với limit rất lớn trong lúc index chưa ready sẽ cố cấp phát mảng khổng lồ (OutOfMemoryError).",
+   "Chia khối 128 MB (MAX_MAPPED_BYTES) giữ mỗi lần map dưới giới hạn 2 GB (index kiểu int) của MappedByteBuffer, và tránh map cả file một lúc."
+  ],
+  "issue": "bug",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#getBackfillProgress()": {
+  "character": "Đọc công khai, không side-effect.",
+  "what": "Đọc int64 little-endian từ backfill.progress; file thiếu hoặc ngắn hơn 8 byte thì trả 0.",
+  "why": "Thiếu nó thì mỗi lần khởi động backfill lại đọc toàn bộ collection từ đầu.",
+  "ux": "Vô hình.",
+  "when": "startBackfillIfNecessary (mỗi createCollection/upsert/search) và đầu backfillCollection.",
+  "if_broken": "Backfill chạy lại từ đầu mỗi request (tốn IO, nhưng kết quả vẫn đúng vì ghi đè theo slot là idempotent).",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#saveBackfillProgress()": {
+  "character": "Ghi công khai, có fsync.",
+  "what": "Ghi đè (TRUNCATE) backfill.progress bằng một int64 LE = id dòng DB cuối cùng đã ghi vào file, rồi force(true).",
+  "why": "Thiếu nó thì backfill không resume được sau restart, và startBackfillIfNecessary luôn thấy 'còn việc', bật thread mới mỗi request.",
+  "ux": "Vô hình.",
+  "when": "Sau mỗi trang 500 dòng trong backfillCollection, NGOÀI writeLock.",
+  "if_broken": "Backfill lặp lại vô hạn.",
+  "gotchas": [
+   "TRUNCATE rồi mới ghi: crash đúng giữa hai bước để lại file rỗng, đọc ra là 0, nên backfill chạy lại từ đầu. An toàn nhưng tốn."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#getSegmentDir()": {
+  "character": "Hàm thuần tạo đường dẫn.",
+  "what": "Trả {dataDir}/collections/{collectionId}/segments/000001. Số segment hardcode bằng hằng SEGMENT_NO = 1 riêng của class này.",
+  "why": "Thiếu một hàm duy nhất cho layout thì các file của cùng collection có thể bị ghi vào nhiều nơi khác nhau.",
+  "ux": "Vô hình với client; đây là layout thư mục người vận hành thấy trên đĩa.",
+  "when": "Mọi thao tác file.",
+  "if_broken": "Không tìm thấy dữ liệu cũ, nên mọi thứ build lại.",
+  "gotchas": [
+   "SEGMENT_NO = 1 ở đây tách rời với EzyVectorConstants.FIRST_SEGMENT_NO (dùng cho dòng DB). Hiện cả hai cùng là 1, nhưng đổi một bên không làm bên kia đổi theo."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#getHnswPath()": {
+  "character": "Hàm thuần tạo đường dẫn.",
+  "what": "Trả {segmentDir}/hnsw.dat.",
+  "why": "Thiếu nó thì service và HnswIndex.save/load không thống nhất vị trí file index.",
+  "ux": "Vô hình.",
+  "when": "Mọi lần nạp/lưu index trong EzyVectorService.",
+  "if_broken": "Index không nạp lại được sau restart, nên phải build lại toàn bộ.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#isHnswPresent()": {
+  "character": "Kiểm tra file, không side-effect.",
+  "what": "true nếu hnsw.dat tồn tại và là file thường.",
+  "why": "Thiếu nó thì service phải bắt NoSuchFileException để phân biệt 'chưa có index' với 'index hỏng'.",
+  "ux": "Vô hình.",
+  "when": "startHnswBuildIfNecessary và getReadyHnswIndex, mỗi request khi collection chưa ready.",
+  "if_broken": "Service không bao giờ nạp được index cũ, hoặc cố nạp file không tồn tại.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#searchChunk()": {
+  "character": "Helper private, vòng lặp nóng của search.",
+  "what": "mmap READ_ONLY một khối vectors.dat và đoạn point_ids.dat tương ứng (LE). Với mỗi slot có pointId > 0: tính cosineScore, rồi đưa vào min-heap top-k (thay phần tử nhỏ nhất nếu score lớn hơn).",
+  "why": "Thiếu bước bỏ qua pointId <= 0 thì slot trống và slot đã xóa (tombstone) cũng vào kết quả với score 0 hoặc score của vector đã xóa.",
+  "ux": "Vô hình; quyết định độ chính xác và tốc độ của đường dự phòng.",
+  "when": "Một lần cho mỗi khối 128 MB trong search.",
+  "if_broken": "Đường dự phòng trả point đã xóa, hoặc bỏ sót point.",
+  "gotchas": [
+   "Quy ước 'pointId <= 0 nghĩa là trống/đã xóa' khiến point có id 0 hợp lệ trở nên vô hình (xem upsertAll)."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#cosineScore()": {
+  "character": "Hàm thuần static.",
+  "what": "Tích vô hướng giữa query đã chuẩn hóa và vector đọc trực tiếp từ buffer mmap tại offset.",
+  "why": "Vector trong file đã được chuẩn hóa lúc ghi, nên tích vô hướng chính là cosine similarity. Thiếu điều kiện chuẩn hóa đó thì score không còn là cosine.",
+  "ux": "Score trả cho client ở đường dự phòng nằm trong [-1, 1], cùng thang với HNSW (1 − distance).",
+  "when": "Mỗi slot còn sống trong searchChunk.",
+  "if_broken": "Thứ tự kết quả sai.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#toVectorBuffer()": {
+  "character": "Hàm thuần static, mã hóa.",
+  "what": "Đóng gói float[] thành ByteBuffer little-endian 4 byte mỗi phần tử, flip sẵn để ghi.",
+  "why": "Thứ tự byte phải khớp với searchChunk (đọc LITTLE_ENDIAN). ByteBuffer mặc định là big-endian, nên thiếu order() thì mọi vector đọc lại thành rác.",
+  "ux": "Vô hình.",
+  "when": "Mỗi record trong upsertAll.",
+  "if_broken": "Vector đọc lại thành rác, nên mọi score ở đường dự phòng sai.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#toLongBuffer()": {
+  "character": "Hàm thuần static, mã hóa.",
+  "what": "Đóng gói một long thành ByteBuffer 8 byte little-endian.",
+  "why": "Dùng chung cho pointId, tombstone 0 và cursor backfill để cả 3 cùng một thứ tự byte.",
+  "ux": "Vô hình.",
+  "when": "upsertAll, deleteAll, saveBackfillProgress.",
+  "if_broken": "pointId/cursor đọc lại sai.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#writeFully()": {
+  "character": "Helper static IO.",
+  "what": "Gọi FileChannel.write(buffer, offset) lặp cho tới khi hết buffer, tăng offset theo số byte đã ghi.",
+  "why": "FileChannel.write có thể ghi thiếu (partial write). Thiếu vòng lặp thì vector bị cắt cụt trong file.",
+  "ux": "Vô hình.",
+  "when": "Mọi lần ghi file của class.",
+  "if_broken": "File chứa vector nửa vời.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#readFully()": {
+  "character": "Helper static IO.",
+  "what": "Đọc lặp cho tới khi đầy buffer; gặp EOF sớm thì ném IOException('Unexpected end of file').",
+  "why": "Thiếu nó thì cursor backfill có thể đọc thiếu byte, ra một giá trị rác.",
+  "ux": "Vô hình.",
+  "when": "Chỉ getBackfillProgress.",
+  "if_broken": "Cursor sai, nên backfill bỏ sót hoặc lặp.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#validateVector()": {
+  "character": "Guard static.",
+  "what": "Ném IllegalArgumentException('Vector dimension mismatch…') nếu vector null hoặc độ dài khác vectorSize.",
+  "why": "Thiếu nó thì một vector ngắn hơn sẽ ghi đè lên slot kế tiếp trong vectors.dat (offset tính theo vectorSize), làm hỏng dữ liệu của point khác.",
+  "ux": "Client nhận lỗi khi upsert/search với sai số chiều, nhưng ở upsert thì DB đã kịp lưu (xem EzyVectorService.upsert).",
+  "when": "Mỗi record trong upsertAll và đầu search.",
+  "if_broken": "Hỏng dữ liệu chéo giữa các point.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#validateSlotId()": {
+  "character": "Guard static.",
+  "what": "Ném IllegalArgumentException nếu slotId <= 0.",
+  "why": "Slot 0 sẽ cho offset âm ((0-1)×…), nên FileChannel.write ném lỗi khó hiểu hoặc ghi sai chỗ.",
+  "ux": "Vô hình (id DB luôn ≥ 1).",
+  "when": "Mỗi record trong upsertAll và mỗi slot trong deleteAll.",
+  "if_broken": "Ghi ra offset không hợp lệ.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#normalize()": {
+  "character": "Hàm thuần static.",
+  "what": "Chia vector cho chuẩn L2 của nó; vector toàn 0 thì trả vector 0 (không chia cho 0).",
+  "why": "Thiếu chuẩn hóa thì tích vô hướng không còn là cosine, và vector dài hơn được điểm cao hơn bất kể hướng.",
+  "ux": "Vector 0 luôn có score 0 với mọi query.",
+  "when": "Khi ghi (upsertAll) và với query (search).",
+  "if_broken": "Score ở đường dự phòng không cùng thang với HNSW; thứ tự kết quả sai.",
+  "gotchas": [
+   "DUPLICATE: giống từng dòng với HnswIndex.normalize. Hai đường search (file và HNSW) chỉ cho score khớp nhau khi hai bản này giống hệt nhau; sửa một bản (ví dụ thêm epsilon) mà không sửa bản kia thì score lệch giữa hai đường."
+  ],
+  "issue": "duplicate",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#SearchResult": {
+  "character": "Value object bất biến (@Getter, final fields).",
+  "what": "Một hit của đường quét file: id = pointId của client (đọc từ point_ids.dat), score = cosine similarity.",
+  "why": "Thiếu kiểu riêng thì search phải trả cặp số thô.",
+  "ux": "id trở thành chunkId trong kết quả trả về cho client.",
+  "when": "Sinh ra trong searchChunk, tiêu thụ bởi EzyVectorService.toExactSearchResults và EzyVectorEntityToModelConverter.",
+  "if_broken": "Đường dự phòng không trả được kết quả.",
+  "gotchas": [
+   "Trùng hình dạng với HnswIndex.SearchResult (id, score) nhưng không chung interface, nên service và converter phải viết 2 overload gần giống nhau."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#SearchResult.SearchResult()": {
+  "character": "Constructor công khai.",
+  "what": "Gán id và score.",
+  "why": "Là cách duy nhất tạo SearchResult (field final).",
+  "ux": "Vô hình.",
+  "when": "Mỗi slot còn sống được chấm điểm trong searchChunk, kể cả khi sau đó không lọt vào top-k.",
+  "if_broken": "Đường dự phòng không chạy.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#VectorRecord": {
+  "character": "Value object bất biến dùng để truyền dữ liệu ghi.",
+  "what": "Bộ ba (slotId = id dòng DB, pointId = id của client, vector thô chưa chuẩn hóa).",
+  "why": "Gói rõ hai loại id khác nhau. Lẫn slotId với pointId thì vector bị ghi sai vị trí, hoặc search trả về sai id.",
+  "ux": "Vô hình.",
+  "when": "Tạo trong EzyVectorService.upsert và backfillCollection; upsert dùng lại chính danh sách này để chèn vào HNSW (theo pointId).",
+  "if_broken": "Dữ liệu file và HNSW lệch id.",
+  "curated_sha": "65e2ce669732"
+ },
+ "storage/EzyVectorFileStorage.java#VectorRecord.VectorRecord()": {
+  "character": "Constructor công khai.",
+  "what": "Gán slotId, pointId, vector. Giữ nguyên tham chiếu mảng vector, không clone.",
+  "why": "Là cách duy nhất tạo VectorRecord.",
+  "ux": "Vô hình.",
+  "when": "Mỗi point trong upsert và backfill.",
+  "if_broken": "Không ghi được file.",
+  "gotchas": [
+   "Không clone mảng: nếu caller sửa vector sau khi tạo record thì dữ liệu ghi xuống cũng đổi theo. Hiện không có caller nào làm vậy."
+  ],
+  "curated_sha": "65e2ce669732"
+ },
+ "hnsw/HnswIndex.java": {
+  "character": "Cấu trúc dữ liệu trong RAM, thread-safe nhờ ReentrantReadWriteLock (ghi độc quyền, đọc song song). Mỗi collection một instance, do EzyVectorService giữ trong map. Không phụ thuộc EzyPlatform, nên test được độc lập (HnswIndexTest, HnswIndexDeletePointTest).",
+  "what": "Cài đặt HNSW (Hierarchical Navigable Small World) cho cosine: mỗi Node có id (= pointId của client), vector đã chuẩn hóa, level ngẫu nhiên, và danh sách hàng xóm theo từng tầng. Tầng 0 có tối đa maxM0 = 2×M hàng xóm, các tầng trên tối đa M. Hỗ trợ insert (kiểu upsert), xóa mềm (remove), search top-k với ef, và lưu/nạp file nhị phân big-endian (magic 0x455A4857 'EZHW', version 1). Mặc định M=16, efConstruction=200.",
+  "why": "Thiếu nó thì mọi search phải quét tuần tự toàn bộ vector (EzyVectorFileStorage.search), chi phí O(số slot × dim) mỗi request. HNSW đưa chi phí về xấp xỉ logarit, đổi lại kết quả là gần đúng (recall phụ thuộc ef).",
+  "ux": "Search nhanh. Nhưng kết quả là xấp xỉ: đôi khi thiếu một láng giềng thật sự gần nhất, mà client không có cách nào nhận biết.",
+  "when": "Nạp từ hnsw.dat ở request đầu tiên của collection sau restart; nếu không có thì build nền từ DB. Sau đó mỗi search đọc nó, mỗi upsert/delete sửa nó và lưu lại toàn bộ file.",
+  "if_broken": "Search dùng index sai thì trả kết quả sai mà không có lỗi nào. Index không nạp được thì service tự rơi về đường quét file và build lại.",
+  "concurrency": "insert/remove giữ write lock; search/searchWithTrace/getNodeIds/save giữ read lock. Vì save giữ read lock trong suốt lúc ghi file, mọi insert phải chờ cho tới khi ghi xong. nodesById là ConcurrentHashMap nên các getter introspection (getNodeLevel, getNeighborIds, getVector, size, getEntryPointId) đọc không khóa và có thể thấy trạng thái đang sửa dở.",
+  "gotchas": [
+   "Xóa là xóa mềm: node vẫn ở trong đồ thị để định tuyến và vẫn được ghi ra file. Chỉ insert lại cùng id (removeNode) hoặc build lại từ DB mới loại bỏ nó hẳn.",
+   "Chọn hàng xóm theo kiểu 'M ứng viên gần nhất' (đơn giản), KHÔNG dùng heuristic chọn đa dạng hướng của paper HNSW. Với dữ liệu thành cụm, recall có thể thấp hơn các thư viện chuẩn.",
+   "Format file big-endian (DataOutputStream), khác với vectors.dat little-endian."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#HnswIndex()": {
+  "character": "Constructor (3 overload xâu chuỗi, AST gộp làm một node).",
+  "what": "() dùng M=16, efConstruction=200; (M, ef) để vectorSize = -1 (chưa xác định, sẽ chốt theo vector đầu tiên); (M, ef, vectorSize) chốt luôn. Kiểm tra M > 1, efConstruction > 0, vectorSize > 0 hoặc = -1. Tính maxM0 = 2M và levelMultiplier = 1/ln(M).",
+  "why": "Thiếu ràng buộc M > 1 thì ln(1) = 0, levelMultiplier vô hạn, nên randomLevel sinh ra level vô nghĩa. Thiếu cơ chế chốt vectorSize thì index trộn lẫn vector khác số chiều.",
+  "ux": "Vô hình.",
+  "when": "EzyVectorService.startHnswBuildIfNecessary (overload 3 tham số), load() (overload 2 tham số, rồi gán vectorSize từ file), và các test.",
+  "if_broken": "Không tạo được index nào; search luôn đi đường quét file.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#insert()": {
+  "character": "Thao tác ghi công khai, có ngữ nghĩa upsert, giữ write lock.",
+  "what": "Kiểm tra và chuẩn hóa vector, chốt/kiểm tra vectorSize, xóa cứng node cũ cùng id (removeNode), chọn level ngẫu nhiên. Đi tham lam từ entry point xuống tới tầng level+1. Từ min(level, maxLevel) xuống tầng 0: searchLayer với efConstruction, nối hai chiều với tối đa M (tầng 0: 2M) ứng viên gần nhất, cắt tỉa hàng xóm của bên kia. Nếu level mới cao hơn maxLevel thì node trở thành entry point.",
+  "why": "Thiếu bước removeNode thì upsert cùng pointId tạo ra node trùng id với vector cũ còn sót trong danh sách hàng xóm. Thiếu bước cắt tỉa thì bậc của node phình ra không giới hạn, nên search chậm dần.",
+  "ux": "Point vừa upsert tìm thấy được ngay qua HNSW.",
+  "when": "EzyVectorService.insertIntoHnswIndex: từng point khi build nền và từng point khi upsert.",
+  "if_broken": "Đồ thị mất liên thông, recall giảm âm thầm (không có lỗi nào được báo).",
+  "concurrency": "Write lock suốt quá trình, kể cả lúc removeNode quét toàn bộ node. Search phải chờ.",
+  "gotchas": [
+   "Khi xây dựng, searchLayer chạy với excludeDeleted=false, nên node mới có thể chọn node ĐÃ XÓA MỀM làm hàng xóm. Sau nhiều lần xóa, các slot hàng xóm (giới hạn M) bị chiếm bởi node chết, làm chất lượng đồ thị giảm dần.",
+   "Upsert một id đã có tốn O(số node × số tầng × M), vì removeNode quét danh sách hàng xóm của MỌI node."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#remove()": {
+  "character": "Thao tác ghi công khai, xóa mềm, giữ write lock.",
+  "what": "Đặt deleted = true cho node (nếu có). Nếu đó là entry point thì chọn lại entry point (node còn sống có level cao nhất) và maxLevel.",
+  "why": "Thiếu nó thì point đã xóa vẫn được search trả về. Xóa mềm thay vì xóa cứng để giữ các cạnh định tuyến, không làm đứt đồ thị.",
+  "ux": "Point đã xóa biến khỏi kết quả ngay sau request delete.",
+  "when": "EzyVectorService.deleteFromHnswIndex.",
+  "if_broken": "Kết quả search chứa point 'ma' (payload null).",
+  "gotchas": [
+   "Id chưa có trong index thì không làm gì. Đây chính là khe hở khiến thread build có thể chèn lại một point vừa bị xóa (xem EzyVectorService.buildHnswIndex).",
+   "Chọn lại entry point là O(số node)."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#search()": {
+  "character": "Thao tác đọc công khai, giữ read lock.",
+  "what": "Chuẩn hóa query, chọn điểm bắt đầu (entry point, hoặc node sống có level cao nhất nếu entry point đã xóa). Đi tham lam từ maxLevel xuống tầng 1, rồi searchLayer ở tầng 0 với ef = max(ef, k), loại node đã xóa. Trả tối đa k kết quả với score = 1 − distance (= cosine similarity).",
+  "why": "Thiếu bước đi tham lam ở các tầng trên thì phải tìm kiếm rộng ngay ở tầng 0 (dày đặc), mất ưu thế logarit. Thiếu ef ≥ k thì không đủ ứng viên để trả k kết quả.",
+  "ux": "Kết quả nhanh và xấp xỉ. ef lớn hơn thì chính xác hơn nhưng chậm hơn; service dùng ef = max(8k, 64).",
+  "when": "EzyVectorService.search khi collection đã ready.",
+  "if_broken": "Search trả rỗng hoặc sai thứ tự.",
+  "concurrency": "Read lock: nhiều search chạy song song, nhưng tất cả bị chặn khi có insert hoặc remove.",
+  "gotchas": [
+   "DUPLICATE: phần đi tham lam ở tầng trên được chép y nguyên trong insert và searchWithTrace."
+  ],
+  "issue": "duplicate",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#searchWithTrace()": {
+  "character": "API công khai phục vụ debug/trực quan hóa, giữ read lock.",
+  "what": "Bản sao của search có ghi lại từng bước (SearchStep: tầng, nodeId, distance, chỉ-ghé-thăm hay được-chọn), trả SearchTrace(steps, results).",
+  "why": "Phục vụ trang trực quan hóa đường đi tìm kiếm HNSW (commit d415d4a 'add hnsw visual'). Thiếu nó thì trang dev /test/hnsw-visual (TestHnswApiController trong src/test của web-plugin) không vẽ được các bước search; hệ thống production không bị ảnh hưởng.",
+  "ux": "Chỉ lập trình viên thấy, qua trang /test/hnsw-visual khi chạy web-plugin từ thư mục test.",
+  "when": "Chỉ từ TestHnswApiController (POST /test/hnsw/search) trên một index riêng của trang dev, không phải index của collection thật.",
+  "if_broken": "Chỉ trang dev hỏng.",
+  "gotchas": [
+   "DUPLICATE: toàn bộ thân hàm là bản chép của search() có thêm trace. Sửa bug ở search() (ví dụ cách chọn điểm bắt đầu) sẽ không đến được đây, khiến trang trực quan hóa hiển thị một thuật toán khác với cái đang chạy thật.",
+   "Không có consumer trong code main; chỉ code test của web-plugin dùng."
+  ],
+  "issue": "duplicate",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#getEntryPointId()": {
+  "character": "Getter introspection, không khóa.",
+  "what": "Trả id của entry point hiện tại, hoặc null nếu index rỗng/đã xóa hết.",
+  "why": "Cho test kiểm tra rằng xóa entry point thì một node khác được bầu lên (HnswIndexDeletePointTest tc05). Thiếu nó thì hành vi đó không kiểm chứng được từ bên ngoài.",
+  "ux": "Không có trong production; chỉ test và trang dev /test/hnsw-visual dùng.",
+  "when": "Chỉ trong HnswIndexDeletePointTest và HnswIndexSaveLoadBenchmark, và trang dev /test/hnsw-visual (TestHnswApiController trong src/test của web-plugin) để vẽ đồ thị.",
+  "if_broken": "Chỉ test hỏng.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#getNodeIds()": {
+  "character": "Getter introspection, giữ read lock, trả bản sao.",
+  "what": "Tập id của các node chưa bị xóa mềm.",
+  "why": "Test dùng để khẳng định point đã xóa không còn được tính. Thiếu nó thì chỉ kiểm chứng gián tiếp được qua search.",
+  "ux": "Không có trong production; chỉ test và trang dev /test/hnsw-visual dùng.",
+  "when": "HnswIndexDeletePointTest, HnswIndexSaveLoadBenchmark, và trang dev /test/hnsw-visual (TestHnswApiController trong src/test của web-plugin) để vẽ đồ thị.",
+  "if_broken": "Chỉ test hỏng.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#getNodeLevel()": {
+  "character": "Getter introspection, không khóa.",
+  "what": "Level của node theo id (kể cả node đã xóa mềm); -1 nếu không có.",
+  "why": "Test cần biết node nằm ở những tầng nào để dựng kịch bản xóa ở tầng 0 hay ở nhiều tầng.",
+  "ux": "Không có trong production; chỉ test và trang dev /test/hnsw-visual dùng.",
+  "when": "HnswIndexDeletePointTest, HnswIndexSaveLoadBenchmark, và trang dev /test/hnsw-visual (TestHnswApiController trong src/test của web-plugin) để vẽ đồ thị.",
+  "if_broken": "Chỉ test hỏng.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#getNeighborIds()": {
+  "character": "Getter introspection, không khóa, trả bản sao.",
+  "what": "Bản sao danh sách hàng xóm của node ở một tầng; danh sách rỗng nếu không có node hoặc tầng.",
+  "why": "Test và benchmark dùng để kiểm tra cấu trúc đồ thị (ví dụ: xóa một node có nhiều hàng xóm).",
+  "ux": "Không có trong production; chỉ test và trang dev /test/hnsw-visual dùng.",
+  "when": "HnswIndexDeletePointTest, HnswIndexSaveLoadBenchmark, và trang dev /test/hnsw-visual (TestHnswApiController trong src/test của web-plugin) để vẽ đồ thị.",
+  "if_broken": "Chỉ test hỏng.",
+  "gotchas": [
+   "Sao chép một ArrayList mà không khóa: nếu chạy song song với insert thì có thể thấy danh sách đang sửa dở."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#getVector()": {
+  "character": "Getter introspection, không khóa, trả bản sao.",
+  "what": "Bản sao vector ĐÃ CHUẨN HÓA của node (không phải vector gốc client gửi), kể cả khi node đã bị xóa mềm; null nếu không có.",
+  "why": "Test dùng để khẳng định xóa một point không làm thay đổi vector của point khác, và để benchmark ghi lại index. Thiếu nó thì những kiểm chứng đó không làm được từ bên ngoài.",
+  "ux": "Không có trong production; chỉ test dùng.",
+  "when": "HnswIndexDeletePointTest và HnswIndexSaveLoadBenchmark.",
+  "if_broken": "Chỉ test hỏng.",
+  "gotchas": [
+   "Nếu ai đó dùng nó để lấy lại vector của client thì sẽ nhận vector đã chuẩn hóa, không phải vector gốc.",
+   "Lần rà dead-code đầu tiên đã đánh dấu nhầm hàm này là 'dead' do lệnh grep bị lỗi; đã xác minh lại là có test sử dụng."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#size()": {
+  "character": "Getter introspection, không khóa, O(số node).",
+  "what": "Đếm các node chưa bị xóa mềm.",
+  "why": "Test dùng để khẳng định số point sống sau insert/xóa.",
+  "ux": "Không có; chỉ test dùng.",
+  "when": "HnswIndexTest, HnswIndexDeletePointTest, HnswIndexSaveLoadBenchmark.",
+  "if_broken": "Chỉ test hỏng.",
+  "gotchas": [
+   "Duyệt toàn bộ map mỗi lần gọi; không phải số node trong file (save ghi cả node đã xóa)."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#save()": {
+  "character": "Thao tác IO công khai, giữ read lock, ghi nguyên tử bằng file tạm + move.",
+  "what": "Ghi ra {path}.tmp qua BufferedOutputStream 8 KB + DataOutputStream (big-endian): header (magic, version, M, efConstruction, vectorSize, maxLevel, entryPointId, số node), rồi từng node qua writeNode. Sau đó Files.move đè lên path (ATOMIC_MOVE nếu hệ thống hỗ trợ, ngược lại move thường).",
+  "why": "Thiếu bước ghi tạm + move thì một lần crash giữa chừng để lại hnsw.dat cụt; với cách hiện tại, file cũ vẫn còn nguyên cho tới khi file mới ghi xong. Thiếu buffer thì mỗi writeInt/writeFloat là một syscall; buffer được thêm ở commit 3a058be (perf #1) kèm HnswIndexSaveLoadBenchmark.",
+  "ux": "Mỗi upsert/delete trên collection đã ready phải chờ hàm này ghi lại toàn bộ index.",
+  "when": "Cuối buildHnswIndex, và sau MỖI updateHnswIndex/deleteFromHnswIndex khi collection đã ready.",
+  "if_broken": "Index chỉ sống trong RAM; mỗi lần restart phải build lại từ DB.",
+  "concurrency": "Giữ read lock suốt thời gian ghi file, nên các insert/remove khác bị chặn, còn search thì vẫn chạy.",
+  "gotchas": [
+   "Không fsync file tạm trước khi move: mất điện ngay sau move có thể để lại hnsw.dat rỗng hoặc hỏng. load sẽ ném lỗi, nên service tự build lại; không mất dữ liệu nhưng mất thời gian.",
+   "entryPoint null được ghi là 0, nên index có một node id 0 thật sẽ nạp lại với node đó làm entry point."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#load()": {
+  "character": "Factory static, IO.",
+  "what": "Đọc file qua BufferedInputStream 8 KB: kiểm tra magic và version (sai thì IOException), tạo index với (M, efConstruction) từ file, gán vectorSize, maxLevel; đọc từng node (readNode). Nếu entryPointId không khớp node nào thì tính lại entry point và maxLevel.",
+  "why": "Thiếu nó thì mỗi lần restart phải build lại index từ DB, với thời gian tỉ lệ với số point (insert từng point dưới write lock).",
+  "ux": "Request đầu tiên sau restart chờ hàm này chạy xong.",
+  "when": "EzyVectorService.startHnswBuildIfNecessary và getReadyHnswIndex.",
+  "if_broken": "Ném IOException, nên service log warn và build lại từ DB (an toàn nhưng chậm).",
+  "gotchas": [
+   "Không kiểm tra id hàng xóm có tồn tại không. Các vòng lặp search/insert đều bỏ qua neighbor null, nên file có tham chiếu treo vẫn chạy được."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#writeNode()": {
+  "character": "Helper static, mã hóa.",
+  "what": "Ghi một node: id (int64), level (int32), deleted (1 byte), độ dài vector, các float, số tầng, rồi với mỗi tầng: số hàng xóm và các id (int64). Tất cả big-endian.",
+  "why": "Định nghĩa layout bản ghi node trong hnsw.dat. Lệch với readNode thì file không đọc lại được.",
+  "ux": "Vô hình.",
+  "when": "Mỗi node (kể cả node đã xóa mềm) trong save.",
+  "if_broken": "hnsw.dat hỏng; lần restart sau phải build lại.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#readNode()": {
+  "character": "Helper static, giải mã.",
+  "what": "Đọc lại một node theo đúng layout của writeNode; nếu vectorSize của index ≥ 0 mà độ dài vector khác thì ném IOException('Vector dimension mismatch').",
+  "why": "Thiếu bước kiểm tra kích thước thì một file trộn lẫn số chiều sẽ nạp được nhưng tính khoảng cách sai, hoặc ném ArrayIndexOutOfBounds khi search.",
+  "ux": "Vô hình.",
+  "when": "Mỗi node trong load.",
+  "if_broken": "Không nạp được index.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#removeNode()": {
+  "character": "Helper private, xóa cứng, chạy trong write lock của insert.",
+  "what": "Gỡ node khỏi map, xóa id của nó khỏi danh sách hàng xóm ở mọi tầng của MỌI node khác. Nếu nó là entry point thì bầu lại.",
+  "why": "Thiếu nó thì insert lại cùng pointId để lại các cạnh trỏ tới vector cũ, và search có thể trả về id đó hai lần hoặc với khoảng cách sai.",
+  "ux": "Upsert đổi vector của một point thì kết quả search phản ánh vector mới.",
+  "when": "Đầu mỗi insert, kể cả khi id chưa từng có (khi đó thoát sớm).",
+  "if_broken": "Index chứa cạnh tới node ma.",
+  "gotchas": [
+   "O(số node × số tầng × M) mỗi lần upsert một id đã có. Không nối lại các node mất cạnh, nên đồ thị thưa dần quanh vùng hay bị upsert."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#findActiveEntryPoint()": {
+  "character": "Helper private, O(số node).",
+  "what": "Trả node chưa bị xóa mềm có level cao nhất, hoặc null nếu không còn node sống.",
+  "why": "Thiếu nó thì xóa entry point làm search bắt đầu từ một node chết, hoặc từ null (NullPointerException).",
+  "ux": "Search vẫn chạy sau khi xóa point 'đầu vào' của đồ thị.",
+  "when": "remove/removeNode khi đụng entry point, search/searchWithTrace khi entry point đã xóa, và load khi entryPointId không hợp lệ.",
+  "if_broken": "Search rỗng hoặc NullPointerException sau một lần xóa.",
+  "gotchas": [
+   "Node sống có level cao nhất có thể thấp hơn maxLevel cũ; các nơi gọi phải cập nhật maxLevel bằng getMaxActiveLevel cùng lúc."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#getMaxActiveLevel()": {
+  "character": "Helper private, O(số node).",
+  "what": "Level cao nhất trong các node chưa bị xóa mềm; -1 nếu không còn node sống.",
+  "why": "Thiếu nó thì maxLevel vẫn trỏ tới tầng của một node đã xóa, nên vòng đi tham lam bắt đầu ở tầng mà entry point mới không có hàng xóm.",
+  "ux": "Vô hình.",
+  "when": "Đi cùng findActiveEntryPoint trong remove, removeNode và load.",
+  "if_broken": "Search tốn vòng vô ích ở các tầng rỗng (không sai kết quả).",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#searchLayer()": {
+  "character": "Helper private, lõi beam search của HNSW (thuật toán 2 trong paper), chạy dưới lock của nơi gọi.",
+  "what": "Beam search ở MỘT tầng: hàng đợi ứng viên min-heap theo khoảng cách, tập kết quả max-heap giới hạn ef, tập visited. Dừng khi ứng viên gần nhất còn lại xa hơn kết quả xa nhất và đã đủ ef. Tùy chọn loại node đã xóa khỏi kết quả (nhưng vẫn đi qua chúng), và ghi trace. Trả danh sách đã sắp theo khoảng cách tăng dần.",
+  "why": "Thiếu nó thì không có bước tìm láng giềng nào: cả insert (chọn hàng xóm) lẫn search (top-k) đều dựa vào đây.",
+  "ux": "Quyết định trực tiếp tốc độ và độ chính xác của search.",
+  "when": "insert (mỗi tầng, ef = efConstruction, không loại node đã xóa), search và searchWithTrace (tầng 0, loại node đã xóa).",
+  "if_broken": "Toàn bộ HNSW sai: kết quả lệch, hoặc vòng lặp tốn tới mức phải quét gần hết đồ thị.",
+  "gotchas": [
+   "Node đã xóa không vào tập kết quả nên tập kết quả lâu đầy hơn; điều kiện dừng vì vậy đến muộn hơn. Collection có nhiều point đã xóa sẽ search chậm dần cho tới khi build lại."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#pruneNeighbors()": {
+  "character": "Helper private, chạy trong write lock của insert.",
+  "what": "Nếu node có quá giới hạn hàng xóm ở tầng đó (M, hoặc 2M ở tầng 0) thì tính lại khoảng cách, chỉ giữ các hàng xóm gần nhất, đồng thời loại id không còn trong map.",
+  "why": "Thiếu nó thì nối hai chiều khi insert làm bậc của các node 'trung tâm' tăng không giới hạn: RAM, kích thước hnsw.dat và thời gian search đều phình ra.",
+  "ux": "Vô hình.",
+  "when": "Sau mỗi lần một hàng xóm được nối ngược tới node mới trong insert.",
+  "if_broken": "Index phình to, search chậm dần.",
+  "gotchas": [
+   "Giữ 'gần nhất' thuần túy (không phải heuristic đa dạng của HNSW), nên có thể cắt mất cạnh nối duy nhất giữa hai cụm."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#randomLevel()": {
+  "character": "Helper private, ngẫu nhiên (ThreadLocalRandom).",
+  "what": "floor(−ln(r) × 1/ln(M)), với r ∈ (0, 1] (chặn dưới bằng Double.MIN_VALUE để tránh ln(0)).",
+  "why": "Phân phối mũ này làm số node giảm khoảng M lần mỗi tầng, tạo nên cấu trúc 'xa lộ' nhiều tầng. Thiếu nó (mọi node ở tầng 0) thì HNSW suy biến thành một đồ thị phẳng và search mất tính logarit.",
+  "ux": "Vô hình. Vì ngẫu nhiên nên hai lần build trên cùng dữ liệu cho ra đồ thị khác nhau, và có thể cho kết quả xấp xỉ hơi khác nhau.",
+  "when": "Mỗi insert.",
+  "if_broken": "Đồ thị một tầng: chậm, hoặc (nếu level quá cao) tốn RAM cho các tầng rỗng.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#normalize()": {
+  "character": "Hàm thuần static.",
+  "what": "Chia vector cho chuẩn L2; vector toàn 0 thì trả vector 0.",
+  "why": "distance() giả định vector đã có độ dài 1 (1 − tích vô hướng). Thiếu chuẩn hóa thì khoảng cách không còn là cosine distance.",
+  "ux": "Vector 0 cách đều mọi thứ (distance 1, score 0).",
+  "when": "insert (vector lưu trữ) và search/searchWithTrace (query).",
+  "if_broken": "Thứ tự kết quả HNSW sai, lệch với đường quét file.",
+  "gotchas": [
+   "DUPLICATE: giống từng dòng với EzyVectorFileStorage.normalize. Score của hai đường search chỉ khớp nhau khi hai bản này giống hệt nhau."
+  ],
+  "issue": "duplicate",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#distance()": {
+  "character": "Hàm thuần static, vòng lặp nóng nhất.",
+  "what": "1 − tích vô hướng của hai vector (đã chuẩn hóa), tức là cosine distance.",
+  "why": "Thước đo duy nhất của index. Thiếu điều kiện chuẩn hóa ở đầu vào thì đây không còn là cosine.",
+  "ux": "Score trả cho client = 1 − distance.",
+  "when": "Mọi so sánh trong insert, search, searchLayer, pruneNeighbors.",
+  "if_broken": "Mọi kết quả HNSW sai.",
+  "gotchas": [
+   "Lặp theo a.length và không kiểm tra b. An toàn là nhờ vectorSize đã được kiểm tra ở insert/search/readNode."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#validateVector()": {
+  "character": "Guard static.",
+  "what": "Ném IllegalArgumentException('vector must not be empty') nếu vector null hoặc rỗng.",
+  "why": "Thiếu nó thì vector rỗng chuẩn hóa thành vector rỗng, rồi distance trả 1 với mọi node mà không báo lỗi.",
+  "ux": "Client gửi vector rỗng nhận lỗi (web validator cũng chặn trước).",
+  "when": "Đầu insert, search, searchWithTrace, trước khi lấy lock.",
+  "if_broken": "Vector rỗng lọt vào index.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#validateVectorSize()": {
+  "character": "Guard có side-effect, chạy trong write lock.",
+  "what": "Nếu vectorSize chưa xác định (-1) thì CHỐT nó bằng độ dài vector này; ngược lại, khác độ dài thì ném IllegalArgumentException.",
+  "why": "Thiếu nó thì index nhận vector khác số chiều, và distance đọc lệch mảng.",
+  "ux": "Upsert sai số chiều bị insertIntoHnswIndex bỏ qua kèm log warn (không báo cho client ở bước này).",
+  "when": "Trong insert, sau khi lấy write lock.",
+  "if_broken": "Trộn số chiều trong index.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#validateSearchVectorSize()": {
+  "character": "Guard không side-effect.",
+  "what": "Nếu vectorSize đã xác định mà query khác độ dài thì ném IllegalArgumentException; index chưa chốt kích thước thì cho qua.",
+  "why": "Thiếu nó thì query sai số chiều cho ra score rác (hoặc ArrayIndexOutOfBounds) thay vì một lỗi rõ ràng.",
+  "ux": "Client search sai số chiều nhận lỗi 'Vector dimension mismatch'.",
+  "when": "search và searchWithTrace, trong read lock.",
+  "if_broken": "Query sai chiều trả kết quả vô nghĩa.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Node": {
+  "character": "Class lồng private, mutable, chỉ được sửa dưới write lock (riêng deleted là volatile).",
+  "what": "Một đỉnh của đồ thị: id (pointId), vector đã chuẩn hóa, level, neighborsByLevel (một List<Long> cho mỗi tầng 0..level), và cờ deleted.",
+  "why": "Đơn vị lưu trữ của index. Danh sách hàng xóm theo tầng chính là 'đồ thị'.",
+  "ux": "Vô hình.",
+  "when": "Tạo trong insert/readNode, sống tới khi bị removeNode hoặc index bị thay thế.",
+  "if_broken": "Không có index.",
+  "gotchas": [
+   "Hàng xóm lưu dạng List<Long> (boxing). Với M=16 thì tầng 0 có tới 32 Long object mỗi node, tốn RAM gấp nhiều lần so với long[]."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Node.Node()": {
+  "character": "Constructor.",
+  "what": "Gán id, vector, level, và tạo sẵn level+1 danh sách hàng xóm rỗng.",
+  "why": "Thiếu bước tạo sẵn danh sách theo tầng thì connect/neighbors phải kiểm tra null ở mọi chỗ.",
+  "ux": "Vô hình.",
+  "when": "insert và readNode.",
+  "if_broken": "Không tạo được node.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Node.neighbors()": {
+  "character": "Accessor, trả THAM CHIẾU tới danh sách (không phải bản sao).",
+  "what": "Danh sách hàng xóm ở tầng layer, hoặc Collections.emptyList() nếu node không có tầng đó.",
+  "why": "Thiếu nhánh emptyList thì việc đi tham lam qua các tầng cao hơn level của node sẽ ném IndexOutOfBounds.",
+  "ux": "Vô hình.",
+  "when": "Mọi bước duyệt đồ thị (insert, search, searchLayer, pruneNeighbors, connect, getNeighborIds).",
+  "if_broken": "Duyệt đồ thị hỏng hoàn toàn.",
+  "gotchas": [
+   "Trả danh sách gốc có thể sửa được: connect() thêm phần tử trực tiếp vào đó, còn emptyList() thì bất biến (ghi vào sẽ ném lỗi; connect tránh điều này bằng cách kiểm tra layer trước)."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Node.connect()": {
+  "character": "Mutator, gọi dưới write lock.",
+  "what": "Thêm neighborId vào tầng layer nếu node có tầng đó, neighborId khác chính nó và chưa có trong danh sách.",
+  "why": "Thiếu kiểm tra trùng thì cạnh nhân đôi chiếm chỗ trong giới hạn M; thiếu kiểm tra tự nối thì node là hàng xóm của chính nó.",
+  "ux": "Vô hình.",
+  "when": "insert, khi nối hai chiều giữa node mới và các ứng viên.",
+  "if_broken": "Đồ thị có cạnh trùng/tự nối, recall giảm.",
+  "gotchas": [
+   "list.contains là O(M); chấp nhận được vì M nhỏ."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Node.setNeighbors()": {
+  "character": "Mutator, gọi dưới write lock.",
+  "what": "Thay toàn bộ danh sách hàng xóm của một tầng (nếu tầng tồn tại).",
+  "why": "Cách pruneNeighbors thay danh sách đã cắt tỉa mà không phải xóa từng phần tử.",
+  "ux": "Vô hình.",
+  "when": "Chỉ pruneNeighbors.",
+  "if_broken": "Cắt tỉa không có hiệu lực, nên bậc của node phình ra.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Candidate": {
+  "character": "Value object private, bất biến, sống ngắn.",
+  "what": "Cặp (id, dist) dùng trong các hàng đợi ưu tiên của searchLayer và trong pruneNeighbors.",
+  "why": "Tránh phải tra lại khoảng cách mỗi lần so sánh trong heap.",
+  "ux": "Vô hình.",
+  "when": "Tạo hàng loạt trong mỗi lần insert và search.",
+  "if_broken": "Không có search.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#Candidate.Candidate()": {
+  "character": "Constructor.",
+  "what": "Gán id và dist.",
+  "why": "Là cách duy nhất tạo Candidate.",
+  "ux": "Vô hình.",
+  "when": "searchLayer (mỗi node được đẩy vào heap) và pruneNeighbors.",
+  "if_broken": "Không có search.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#SearchResult": {
+  "character": "Value object công khai, bất biến (@Getter, constructor package-private).",
+  "what": "Một hit HNSW: id = pointId của client, score = 1 − cosine distance.",
+  "why": "Kiểu trả về của search, được service và converter dùng để ghép payload.",
+  "ux": "id trở thành chunkId trong kết quả trả cho client.",
+  "when": "Tạo cuối search/searchWithTrace; tiêu thụ bởi EzyVectorService.toSearchResults và EzyVectorEntityToModelConverter.",
+  "if_broken": "Không trả được kết quả HNSW.",
+  "gotchas": [
+   "Cùng hình dạng với EzyVectorFileStorage.SearchResult nhưng không chung interface (xem toSearchResults/toExactSearchResults, đang duplicate)."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#SearchResult.SearchResult()": {
+  "character": "Constructor package-private.",
+  "what": "Gán id và score.",
+  "why": "Package-private để chỉ HnswIndex tạo được kết quả.",
+  "ux": "Vô hình.",
+  "when": "search và searchWithTrace, mỗi kết quả trong top-k.",
+  "if_broken": "Không trả được kết quả.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#SearchStep": {
+  "character": "Value object công khai, bất biến, chỉ phục vụ trace.",
+  "what": "Một bước trong trace: tầng, nodeId, distance, và visitedOnly (true = chỉ ghé thăm, false = được chọn làm điểm hiện tại).",
+  "why": "Đơn vị dữ liệu mà trang /test/hnsw-visual dùng để vẽ từng bước duyệt đồ thị. Thiếu nó thì trang dev không hoạt động; production không bị ảnh hưởng.",
+  "ux": "Chỉ lập trình viên thấy, qua trang /test/hnsw-visual.",
+  "when": "Chỉ khi searchWithTrace chạy, tức chỉ từ TestHnswApiController (code test của web-plugin).",
+  "if_broken": "Chỉ trang dev /test/hnsw-visual hỏng.",
+  "gotchas": [
+   "Chỉ được dùng bởi code test; không có consumer trong code main."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#SearchStep.SearchStep()": {
+  "character": "Constructor package-private.",
+  "what": "Gán layer, nodeId, distance, visitedOnly.",
+  "why": "Chỉ tồn tại để searchWithTrace/searchLayer ghi trace.",
+  "ux": "Chỉ lập trình viên thấy, qua trang /test/hnsw-visual.",
+  "when": "Chỉ khi searchWithTrace chạy, tức chỉ từ TestHnswApiController (code test của web-plugin).",
+  "if_broken": "Chỉ trang dev /test/hnsw-visual hỏng.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#SearchTrace": {
+  "character": "Value object công khai, bất biến, chỉ phục vụ trace.",
+  "what": "Gói danh sách SearchStep và danh sách SearchResult của một lần searchWithTrace.",
+  "why": "Kiểu trả về của searchWithTrace cho trang dev. Thiếu nó thì trang dev không hoạt động; production không bị ảnh hưởng.",
+  "ux": "Chỉ lập trình viên thấy, qua trang /test/hnsw-visual.",
+  "when": "Chỉ khi searchWithTrace chạy, tức chỉ từ TestHnswApiController (code test của web-plugin).",
+  "if_broken": "Chỉ trang dev /test/hnsw-visual hỏng.",
+  "gotchas": [
+   "Chỉ được dùng bởi code test; không có consumer trong code main."
+  ],
+  "curated_sha": "c05a728d37b4"
+ },
+ "hnsw/HnswIndex.java#SearchTrace.SearchTrace()": {
+  "character": "Constructor package-private.",
+  "what": "Gán steps và results.",
+  "why": "Chỉ searchWithTrace tạo kiểu này.",
+  "ux": "Chỉ lập trình viên thấy, qua trang /test/hnsw-visual.",
+  "when": "Chỉ khi searchWithTrace chạy, tức chỉ từ TestHnswApiController (code test của web-plugin).",
+  "if_broken": "Chỉ trang dev /test/hnsw-visual hỏng.",
+  "curated_sha": "c05a728d37b4"
+ },
+ "constant/EzyVectorConstants.java": {
+  "character": "Holder hằng số (final class, constructor private), chỉ được dùng qua static import.",
+  "what": "Gồm tham số tuning search (EXPLORATION_FACTOR_SEARCH_MULTIPLIER = 8, MIN_EXPLORATION_FACTOR_SEARCH = 64), số segment/version đầu tiên (FIRST_SEGMENT_NO = 1, FIRST_VERSION = 1), thư mục dữ liệu mặc định 'data/ezyvector', và 3 tên setting: ezyrag_vector_data_dir, ezyvector_vector_collections_allowed_ips, ezyvector_vector_collections_api_key.",
+  "why": "Thiếu nơi tập trung này thì tên setting bị gõ lại ở 4 nơi (SDK + admin + web) và lệch nhau, làm admin lưu một key còn web đọc một key khác.",
+  "ux": "Gián tiếp: ef search = max(8×limit, 64) quyết định độ chính xác/tốc độ mà client cảm nhận.",
+  "when": "Biên dịch vào EzyVectorService, EzyVectorSettingService, EzyVectorModelToEntityConverter, và AdminEzyVectorSettingService / WebEzyVectorSettingService (đều qua static import).",
+  "if_broken": "Đổi tên setting thì mất cấu hình đã lưu (API key, IP, thư mục dữ liệu) của mọi bản cài.",
+  "gotchas": [
+   "Đồ thị hiển thị 'dùng bởi 0' nhưng thực tế có 5 consumer: graphify không trích xuất cạnh từ 'import static', nên các cạnh này KHÔNG được vẽ (đã xác minh bằng grep).",
+   "SETTING_NAME_VECTOR_DATA_DIR có tiền tố 'ezyrag_', khác các key 'ezyvector_' còn lại; không đổi được mà không viết migration."
+  ],
+  "curated_sha": "5b57cb343845"
+ },
+ "constant/EzyVectorDistance.java": {
+  "character": "Enum có lookup không phân biệt hoa thường.",
+  "what": "Chỉ có COSINE. of(value) tra theo value.toUpperCase() qua map dựng bởi EzyEnums.enumMap; equalsValue so sánh chính xác.",
+  "why": "Thiếu nó thì API tạo collection nhận bất kỳ chuỗi distance nào (ví dụ 'L2') dù engine chỉ biết cosine.",
+  "ux": "Client tạo collection với distance khác 'cosine' (không phân biệt hoa thường) nhận lỗi vectors.distance = invalid.",
+  "when": "Chỉ WebEzyVectorCollectionValidator dùng, khi tạo collection.",
+  "if_broken": "Collection có distance không được hỗ trợ lọt vào DB, mà engine vẫn tính bằng cosine.",
+  "gotchas": [
+   "Giá trị lưu vào cột distance là chuỗi client gửi lên, giữ nguyên hoa thường (có thể là 'cosine'). Không có code nào đọc lại cột này: HnswIndex và file storage luôn dùng cosine.",
+   "'dùng bởi 0' trong đồ thị là vì consumer duy nhất nằm ở web-plugin, ngoài phạm vi đồ thị."
+  ],
+  "curated_sha": "5acc97b81fd2"
+ },
+ "constant/EzyVectorTableNames.java": {
+  "character": "Holder hằng số (final class, constructor private).",
+  "what": "Tên 3 bảng: ezyvector_collections, ezyvector_collection_points, ezyvector_collection_segments.",
+  "why": "Thiếu nó thì @Table của 3 entity phải gõ cứng tên bảng, và dễ lệch với scripts.sql của admin-plugin.",
+  "ux": "Vô hình.",
+  "when": "Lúc biên dịch, qua static import trong @Table của EzyVectorCollection, EzyVectorCollectionPoint, EzyVectorCollectionSegment.",
+  "if_broken": "Mọi truy vấn JPA trỏ sai bảng.",
+  "gotchas": [
+   "'dùng bởi 0' trong đồ thị là sai về thực tế: 3 entity dùng nó qua 'import static', loại import mà graphify không trích xuất.",
+   "Chuỗi dataType trong các Default*Filter ('ezyvector_collection_points'…) gõ cứng lại tên bảng thay vì dùng hằng số này."
+  ],
+  "curated_sha": "e7822cac5325"
+ },
+ "service/EzyVectorCollectionService.java": {
+  "character": "Service đọc, stateless, là base class cho AdminEzyVectorCollectionService và WebEzyVectorCollectionService.",
+  "what": "getCollectionById và getCollectionByName: lấy entity qua repository rồi chuyển sang EzyVectorCollectionModel (null nếu không có).",
+  "why": "Thiếu nó thì controller của admin/web phải tự gọi repository và converter, lặp lại logic ánh xạ.",
+  "ux": "Admin xem chi tiết collection theo id; web API lấy thông tin collection theo tên.",
+  "when": "AdminEzyVectorCollectionControllerService (theo id) và WebEzyVectorCollectionControllerService (theo tên).",
+  "if_broken": "Trang chi tiết collection và API get collection hỏng.",
+  "gotchas": [
+   "pointsCount trong model luôn là 0: không có code nào cập nhật cột points_count."
+  ],
+  "curated_sha": "cfb4d4158ab0"
+ },
+ "service/EzyVectorSettingService.java": {
+  "character": "Service đọc setting, stateless; base class cho Admin/WebEzyVectorSettingService (web thêm giải mã và cache API key).",
+  "what": "getVectorDataDir (mặc định 'data/ezyvector'), getVectorCollectionsApiKey (giá trị mật khẩu), getVectorCollectionsAllowedIps (Set, mặc định rỗng), tất cả đọc từ DefaultSettingService của EzyPlatform.",
+  "why": "Thiếu nó thì mỗi plugin tự đọc setting với key và giá trị mặc định riêng, và thư mục dữ liệu có thể lệch giữa các nơi.",
+  "ux": "Admin đổi thư mục dữ liệu / API key / IP được phép trên trang setting của admin-plugin.",
+  "when": "getVectorDataDir chạy MỖI lần EzyVectorService.newVectorFileStorage() (nhiều lần mỗi request); API key và IP được đọc bởi validator của web-plugin cho mỗi request API.",
+  "if_broken": "Không xác định được thư mục dữ liệu (mọi thao tác file hỏng) và không xác thực được API.",
+  "gotchas": [
+   "Đổi thư mục dữ liệu khi đang chạy không di chuyển file cũ; collection như mới tinh và bị build lại từ DB."
+  ],
+  "curated_sha": "a8149d8b5d3e"
+ },
+ "service/PaginationEzyVectorCollectionPointService.java": {
+  "character": "Service phân trang sinh theo khuôn (cùng khuôn với bản Collection và Segment); kế thừa CommonPaginationService của EzyPlatform.",
+  "what": "Ghép PaginationEzyVectorCollectionPointRepository + converter tham số phân trang; chuyển entity sang EzyVectorCollectionPointModel; mặc định sắp theo id giảm dần (IdDesc).",
+  "why": "Thiếu nó thì admin không liệt kê được các point của collection theo trang.",
+  "ux": "Admin xem danh sách point mới nhất trước, có next/prev page.",
+  "when": "Qua subclass AdminPaginationEzyVectorCollectionPointService / WebPaginationEzyVectorCollectionPointService, khi mở trang chi tiết collection.",
+  "if_broken": "Trang danh sách point hỏng.",
+  "gotchas": [
+   "Mỗi trang tải cả cột vector (MEDIUMBLOB) từ DB vào EzyVectorCollectionPointModel, dù response của admin chỉ dùng độ dài của nó; trang lớn với vector nhiều chiều tốn IO/RAM không cần thiết."
+  ],
+  "curated_sha": "0a1213726ab6"
+ },
+ "service/PaginationEzyVectorCollectionSegmentService.java": {
+  "character": "Service phân trang sinh theo khuôn; cùng khuôn với bản Point và Collection.",
+  "what": "Như bản Point nhưng cho EzyVectorCollectionSegment → EzyVectorCollectionSegmentModel, mặc định IdDesc.",
+  "why": "Thiếu nó thì admin không liệt kê được segment.",
+  "ux": "Admin thấy danh sách segment (thực tế luôn đúng 1 segment mỗi collection).",
+  "when": "Qua subclass Admin/Web khi xem segment của collection.",
+  "if_broken": "Trang segment hỏng (không ảnh hưởng vector).",
+  "curated_sha": "ebf8c8a7e15b"
+ },
+ "service/PaginationEzyVectorCollectionService.java": {
+  "character": "Service phân trang sinh theo khuôn; cùng khuôn với bản Point và Segment.",
+  "what": "Như bản Point nhưng cho EzyVectorCollection → EzyVectorCollectionModel, mặc định IdDesc.",
+  "why": "Thiếu nó thì trang danh sách collection của admin không có dữ liệu.",
+  "ux": "Admin thấy danh sách collection mới nhất trước, lọc được theo tên (likeKeyword) và status.",
+  "when": "Qua AdminPaginationEzyVectorCollectionService / WebPaginationEzyVectorCollectionService.",
+  "if_broken": "Trang danh sách collection hỏng.",
+  "curated_sha": "bf888d43196d"
+ },
+ "converter/EzyVectorEntityToModelConverter.java": {
+  "character": "Converter stateless (giữ ClockProxy và ObjectMapper); base class cho Admin/WebEzyVectorEntityToModelConverter.",
+  "what": "toModel cho Collection (null-safe), Point, Segment: copy field, đổi LocalDateTime sang timestamp. Hai overload toSearchResultModel(hit, entity) cho hit của HNSW và của file storage: chunkId = hit.id, score, payload = JSON parse sang Map (null nếu entity null hoặc payload trống). toPayloadMap parse chuỗi JSON.",
+  "why": "Thiếu nó thì kết quả search không có payload, và mỗi service tự ánh xạ entity.",
+  "ux": "Client nhận kết quả search dạng {chunkId, score, payload}; tên 'chunkId' cho thấy thiết kế hướng tới RAG (mỗi point là một chunk văn bản).",
+  "when": "Mỗi hit của mọi search (N lần mỗi request), và mỗi phần tử trong các trang admin.",
+  "if_broken": "Search và các trang admin lỗi.",
+  "gotchas": [
+   "Hai overload toSearchResultModel giống hệt nhau, chỉ khác kiểu hit (không có interface chung giữa HnswIndex.SearchResult và EzyVectorFileStorage.SearchResult).",
+   "toModel(Collection) kiểm tra null, nhưng toModel(Point) và toModel(Segment) thì không.",
+   "Parse JSON payload cho từng hit trên mỗi request; payload lớn thì tốn CPU."
+  ],
+  "curated_sha": "77586753ab4b"
+ },
+ "converter/EzyVectorModelToEntityConverter.java": {
+  "character": "Converter stateless (ClockProxy, ObjectMapper); base class cho WebEzyVectorModelToEntityConverter.",
+  "what": "toVectorCollectionEntity: tên, vectorSize, distance (nguyên văn), indexType='HNSW', status=ACTIVATED, thời gian. toVectorCollectionPointEntity: status=LIVE rồi merge. mergeToCollectionPointEntity: version+1, gán vector, payload → JSON, updatedAt. toVectorCollectionSegment: segment số 1, MUTABLE, ACTIVE, indexVersion=1. toPayloadJson: Map → JSON.",
+  "why": "Thiếu nó thì quy ước version và trạng thái mặc định bị rải rác. version tăng mỗi lần upsert là cách duy nhất biết một point đã bị ghi đè bao nhiêu lần.",
+  "ux": "Admin thấy version của point tăng sau mỗi lần upsert lại.",
+  "when": "EzyVectorService.createCollectionIfAbsent, upsert (mỗi point), ensureMutableSegment.",
+  "if_broken": "Không ghi được collection/point/segment mới.",
+  "gotchas": [
+   "Point mới bắt đầu với version = 0 + 1 = 1, nhờ giá trị mặc định 0 của field long, không phải nhờ FIRST_VERSION.",
+   "Không kiểm tra độ dài vector: dữ liệu sai kích thước đi thẳng vào DB (xem EzyVectorService.upsert)."
+  ],
+  "curated_sha": "cdecd5225f1d"
+ },
+ "converter/EzyVectorResultToModelConverter.java": {
+  "character": "Class rỗng, giữ chỗ làm điểm mở rộng.",
+  "what": "Không có thành viên nào. WebEzyVectorResultToModelConverter kế thừa nó (@EzySingleton) cũng rỗng.",
+  "why": "Có vẻ là giữ chỗ theo quy ước sinh code của EzyPlatform (mỗi module có bộ converter Entity/Model/Result). Hiện thiếu nó cũng không ảnh hưởng gì, ngoài việc web-plugin không biên dịch được vì đang kế thừa nó.",
+  "ux": "Không có.",
+  "when": "Chỉ được khởi tạo làm bean singleton rỗng trong web-plugin.",
+  "if_broken": "Không ảnh hưởng hành vi.",
+  "gotchas": [
+   "DEAD về hành vi: một class rỗng và một subclass rỗng, không ai gọi phương thức nào. Xóa thì phải xóa cả WebEzyVectorResultToModelConverter."
+  ],
+  "issue": "dead",
+  "curated_sha": "ab00ed55339f"
+ },
+ "repo/EzyVectorCollectionPointRepository.java": {
+  "character": "Interface repository của ezyfox-data (EzyDatabaseRepository<Long, EzyVectorCollectionPoint>); không có @EzyRepository ở đây, admin/web khai báo interface con có @EzyRepository để framework sinh implementation.",
+  "what": "findByCollectionIdAndPointId (truy vấn suy ra từ tên method; dựa trên unique key (collection_id, point_id)); findListByCollectionIdAndIdGreaterThan (JPQL: collectionId = ?0 AND id > ?1 ORDER BY id ASC, giới hạn bằng EzyNext) để duyệt theo cursor.",
+  "why": "Thiếu phương thức duyệt theo cursor id thì backfill và build HNSW phải dùng OFFSET, chậm dần theo trang; thiếu tra cứu theo (collection, pointId) thì không ánh xạ được id client sang dòng DB.",
+  "ux": "Vô hình. Quyết định tốc độ upsert (1 SELECT mỗi point) và tốc độ ghép payload khi search.",
+  "when": "Mỗi point trong upsert/deletePoints, mỗi hit trong search, mỗi trang 500 dòng của backfill và build HNSW.",
+  "if_broken": "Mọi thao tác vector hỏng.",
+  "gotchas": [
+   "Truy vấn cursor lọc theo collection_id rồi sắp theo id. scripts.sql chỉ có index (collection_id, status) và unique (collection_id, point_id), không có (collection_id, id), nên với collection lớn MySQL có thể phải sắp xếp tốn kém ở mỗi trang của backfill/build."
+  ],
+  "curated_sha": "97cb97ce920b"
+ },
+ "repo/EzyVectorCollectionRepository.java": {
+  "character": "Interface repository ezyfox-data; implementation do subclass @EzyRepository ở admin/web sinh ra.",
+  "what": "findByName (cả entity), findIdByName (chỉ id → IdResult), findVectorSizeByName (id + vectorSize → EzyVectorCollectionVectorSizeResult). Hai cái sau là JPQL chiếu cột, tránh tải cột config (TEXT).",
+  "why": "Thiếu các truy vấn chiếu cột thì mỗi upsert/search phải tải cả entity collection chỉ để lấy id và vectorSize.",
+  "ux": "Vô hình.",
+  "when": "findVectorSizeByName: đầu mỗi upsert/delete/search, cộng thêm trong các overload theo tên. findByName: createCollectionIfAbsent và EzyVectorCollectionService.",
+  "if_broken": "Không tìm được collection theo tên, nên mọi API vector ném 'You need to setup MySQL vector database first'.",
+  "curated_sha": "5fe60411ebcb"
+ },
+ "repo/EzyVectorCollectionSegmentRepository.java": {
+  "character": "Interface repository ezyfox-data.",
+  "what": "findByCollectionIdAndSegmentNo, dựa trên unique key (collection_id, segment_no).",
+  "why": "Thiếu nó thì ensureMutableSegment không biết segment số 1 đã tồn tại chưa, nên tạo trùng và vướng unique key.",
+  "ux": "Vô hình.",
+  "when": "ensureMutableSegment: createCollectionIfAbsent và mỗi upsert.",
+  "if_broken": "Upsert lỗi vì không đảm bảo được segment.",
+  "curated_sha": "fc0afa790c42"
+ },
+ "repo/PaginationEzyVectorCollectionPointRepository.java": {
+  "character": "Repository phân trang sinh theo khuôn (cùng khuôn với bản Collection và Segment); kế thừa CommonPaginationRepository của EzyPlatform.",
+  "what": "Gắn kiểu EzyVectorCollectionPointFilter + EzyVectorCollectionPointPaginationParameter + entity EzyVectorCollectionPoint; chỉ override getEntityType().",
+  "why": "Thiếu nó thì filter và tham số phân trang không được ráp thành câu JPQL cho bảng point.",
+  "ux": "Admin phân trang/lọc danh sách point.",
+  "when": "Qua PaginationEzyVectorCollectionPointService.",
+  "if_broken": "Trang danh sách point hỏng.",
+  "curated_sha": "e3b05a2666a3"
+ },
+ "repo/PaginationEzyVectorCollectionRepository.java": {
+  "character": "Repository phân trang sinh theo khuôn; cùng khuôn với bản Point/Segment.",
+  "what": "Như bản Point nhưng cho EzyVectorCollectionFilter / EzyVectorCollectionPaginationParameter / EzyVectorCollection.",
+  "why": "Thiếu nó thì danh sách collection không phân trang/lọc được.",
+  "ux": "Admin lọc collection theo tên/status.",
+  "when": "Qua PaginationEzyVectorCollectionService.",
+  "if_broken": "Trang danh sách collection hỏng.",
+  "curated_sha": "671110b1e570"
+ },
+ "repo/PaginationEzyVectorCollectionSegmentRepository.java": {
+  "character": "Repository phân trang sinh theo khuôn; cùng khuôn với bản Point/Collection.",
+  "what": "Như bản Point nhưng cho EzyVectorCollectionSegmentFilter / EzyVectorCollectionSegmentPaginationParameter / EzyVectorCollectionSegment.",
+  "why": "Thiếu nó thì danh sách segment không phân trang được.",
+  "ux": "Admin xem danh sách segment.",
+  "when": "Qua PaginationEzyVectorCollectionSegmentService.",
+  "if_broken": "Trang segment hỏng.",
+  "curated_sha": "ba9cfcdb4b4d"
+ },
+ "entity/EzyVectorCollection.java": {
+  "character": "Entity JPA mutable (Lombok getter/setter), ánh xạ bảng ezyvector_collections.",
+  "what": "id, name (unique), vectorSize, distance, indexType, status, pointsCount, config, createdAt, updatedAt.",
+  "why": "Nguồn sự thật về tên và số chiều của collection. Thiếu vectorSize đúng thì mọi bước kiểm tra kích thước ở file storage và HNSW đều sai.",
+  "ux": "Admin thấy các cột này ở trang danh sách/chi tiết collection.",
+  "when": "Đọc ở đầu mỗi thao tác vector (qua projection id + vectorSize); ghi khi tạo collection.",
+  "if_broken": "Không ánh xạ được bảng; plugin không chạy.",
+  "gotchas": [
+   "pointsCount và config không bao giờ được ghi: pointsCount luôn 0.",
+   "status (ACTIVATED/INACTIVATED) không được kiểm tra khi upsert/search; collection INACTIVATED vẫn hoạt động bình thường.",
+   "distance chỉ để hiển thị; engine luôn dùng cosine."
+  ],
+  "curated_sha": "1c7ed431ea79"
+ },
+ "entity/EzyVectorCollectionPoint.java": {
+  "character": "Entity JPA mutable, ánh xạ bảng ezyvector_collection_points; id tự tăng của bảng chính là slotId trong file storage.",
+  "what": "id (slot), collectionId, pointId (id của client, unique trong collection), vector (float[] lưu MEDIUMBLOB), payload (JSON text), status, version, createdAt, updatedAt.",
+  "why": "Đây là nguồn sự thật để dựng lại vectors.dat (backfill) và hnsw.dat (build). Mất bảng này thì không khôi phục được index.",
+  "ux": "Payload của mỗi kết quả search được đọc từ đây.",
+  "when": "Mọi upsert/delete/search; mọi trang backfill/build.",
+  "if_broken": "Toàn bộ dữ liệu vector mất.",
+  "gotchas": [
+   "id là tự tăng toàn bảng, dùng chung cho mọi collection, nên slot trong file của collection không bắt đầu từ 1 (xem EzyVectorFileStorage).",
+   "status luôn là LIVE vì xóa là xóa cứng; giá trị DELETED không bao giờ được ghi."
+  ],
+  "curated_sha": "f9e5ae0379df"
+ },
+ "entity/EzyVectorCollectionPointStatus.java": {
+  "character": "Enum trạng thái.",
+  "what": "LIVE, DELETED, kèm equalsValue(String).",
+  "why": "Cho giá trị status của point mới (LIVE) một nguồn duy nhất thay vì chuỗi gõ tay.",
+  "ux": "Admin thấy status LIVE ở mọi point.",
+  "when": "toVectorCollectionPointEntity khi tạo point.",
+  "if_broken": "Không tạo được point.",
+  "gotchas": [
+   "DELETED và equalsValue không được dùng ở đâu cả: deletePoints xóa cứng dòng DB."
+  ],
+  "curated_sha": "d8035d3be7c6"
+ },
+ "entity/EzyVectorCollectionSegment.java": {
+  "character": "Entity JPA mutable, ánh xạ bảng ezyvector_collection_segments.",
+  "what": "id, collectionId, segmentNo, segmentType, status, pointsCount, minPointId, maxPointId (nullable), indexVersion, createdAt, updatedAt.",
+  "why": "Khung dữ liệu cho thiết kế nhiều segment (mutable/immutable, compaction). Hiện chỉ phục vụ việc hiển thị; thiếu nó thì engine vector vẫn chạy.",
+  "ux": "Admin thấy một segment mỗi collection.",
+  "when": "Tạo một lần trong ensureMutableSegment; đọc ở trang admin.",
+  "if_broken": "Upsert lỗi (vì ensureMutableSegment chạy mỗi upsert) dù engine không thực sự cần nó.",
+  "gotchas": [
+   "pointsCount/minPointId/maxPointId không bao giờ được cập nhật; indexVersion luôn là 1."
+  ],
+  "curated_sha": "f2f7feb04afd"
+ },
+ "entity/EzyVectorCollectionSegmentStatus.java": {
+  "character": "Enum trạng thái (phần lớn chưa dùng).",
+  "what": "BUILDING, ACTIVE, COMPACTING, OBSOLETE, CORRUPTED, kèm equalsValue.",
+  "why": "Đặt sẵn vòng đời segment cho thiết kế compaction tương lai. Hiện chỉ ACTIVE được dùng.",
+  "ux": "Admin luôn thấy ACTIVE.",
+  "when": "toVectorCollectionSegment (ACTIVE).",
+  "if_broken": "Không tạo được segment.",
+  "gotchas": [
+   "4 trên 5 giá trị không được dùng ở đâu cả, kể cả ở 2 plugin."
+  ],
+  "curated_sha": "786a7244a833"
+ },
+ "entity/EzyVectorCollectionSegmentType.java": {
+  "character": "Enum loại segment (một nửa chưa dùng).",
+  "what": "MUTABLE, IMMUTABLE, kèm equalsValue.",
+  "why": "Đặt sẵn cho thiết kế segment bất biến sau compaction; hiện chỉ MUTABLE được dùng.",
+  "ux": "Admin luôn thấy MUTABLE.",
+  "when": "toVectorCollectionSegment.",
+  "if_broken": "Không tạo được segment.",
+  "gotchas": [
+   "IMMUTABLE không được dùng ở đâu cả."
+  ],
+  "curated_sha": "a067c33d79f1"
+ },
+ "entity/EzyVectorCollectionStatus.java": {
+  "character": "Enum trạng thái collection.",
+  "what": "ACTIVATED, INACTIVATED, kèm equalsValue.",
+  "why": "Cho giá trị status của collection mới một nguồn duy nhất.",
+  "ux": "Admin thấy ACTIVATED; có thể lọc theo status.",
+  "when": "toVectorCollectionEntity.",
+  "if_broken": "Không tạo được collection.",
+  "gotchas": [
+   "Không có code nào chặn thao tác trên collection INACTIVATED, và INACTIVATED không được ghi ở đâu cả."
+  ],
+  "curated_sha": "a648a4ddfd83"
+ },
+ "model/EzyVectorCollectionModel.java": {
+  "character": "Model bất biến (Lombok @Builder, @Getter) để trả ra ngoài service.",
+  "what": "Bản sao các cột của EzyVectorCollection, với thời gian dạng timestamp (long).",
+  "why": "Tách tầng trình bày khỏi entity JPA; thiếu nó thì controller phải dùng trực tiếp entity mutable.",
+  "ux": "Dữ liệu hiển thị ở trang collection của admin và API get collection của web.",
+  "when": "Tạo bởi EzyVectorEntityToModelConverter.toModel(Collection).",
+  "if_broken": "Trang/API collection hỏng.",
+  "curated_sha": "5c2bd14666cc"
+ },
+ "model/EzyVectorCollectionPointModel.java": {
+  "character": "Model bất biến (@Builder, @Getter).",
+  "what": "Bản sao các cột của EzyVectorCollectionPoint, gồm cả vector đầy đủ và payload dạng chuỗi JSON thô.",
+  "why": "Phục vụ trang danh sách point của admin.",
+  "ux": "Admin xem payload, version, status của từng point; response của admin chỉ đưa ra vectorSize (độ dài mảng), không đưa cả vector.",
+  "when": "Tạo bởi converter trong PaginationEzyVectorCollectionPointService; được ParameterConverter đọc id để làm token trang tiếp.",
+  "if_broken": "Trang point hỏng.",
+  "gotchas": [
+   "payload ở đây là chuỗi JSON, trong khi EzyVectorSearchResultModel.payload là Map đã parse."
+  ],
+  "curated_sha": "027130f706c8"
+ },
+ "model/EzyVectorCollectionSegmentModel.java": {
+  "character": "Model bất biến (@Builder, @Getter).",
+  "what": "Bản sao các cột của EzyVectorCollectionSegment, thời gian dạng timestamp.",
+  "why": "Phục vụ trang segment của admin.",
+  "ux": "Admin xem segment.",
+  "when": "Tạo trong PaginationEzyVectorCollectionSegmentService.",
+  "if_broken": "Trang segment hỏng.",
+  "curated_sha": "d60396235efb"
+ },
+ "model/EzyVectorSearchResultModel.java": {
+  "character": "Model bất biến (@Builder, field final).",
+  "what": "chunkId (= pointId của client), score (cosine similarity), payload (Map đã parse từ JSON, có thể null).",
+  "why": "Hợp đồng đầu ra của search: thiếu nó thì web-plugin không có cấu trúc ổn định để trả về client.",
+  "ux": "Mỗi phần tử trong kết quả search mà client nhận.",
+  "when": "Mỗi hit của mọi search.",
+  "if_broken": "API search hỏng.",
+  "gotchas": [
+   "payload null có hai nghĩa không phân biệt được: point không có payload, HOẶC dòng DB đã mất (race khi xóa, xem EzyVectorService.buildHnswIndex)."
+  ],
+  "curated_sha": "6e52b9f14537"
+ },
+ "model/SaveVectorCollectionModel.java": {
+  "character": "Model đầu vào bất biến (@Builder).",
+  "what": "Bọc một Vectors (size, distance), mô phỏng hình dạng request tạo collection {\"vectors\": {\"size\", \"distance\"}}.",
+  "why": "Tách request của web khỏi SDK. Thiếu nó thì SDK phụ thuộc trực tiếp vào lớp request của web-plugin.",
+  "ux": "Hình dạng JSON client gửi khi tạo collection.",
+  "when": "WebEzyVectorRequestToModelConverter tạo ra, createCollectionIfAbsent tiêu thụ.",
+  "if_broken": "Không tạo được collection.",
+  "curated_sha": "47a1439aca75"
+ },
+ "model/SaveVectorCollectionModel.java#Vectors": {
+  "character": "Model lồng bất biến (@Builder, @Getter).",
+  "what": "size (số chiều vector) và distance (chuỗi, đã được web validator kiểm tra là cosine).",
+  "why": "size ở đây trở thành vectorSize của collection, chốt cứng số chiều cho toàn bộ file storage và HNSW.",
+  "ux": "Client chọn số chiều một lần khi tạo collection; không đổi được về sau.",
+  "when": "Chỉ khi tạo collection mới. Với collection đã có thì bị bỏ qua (xem createCollectionIfAbsent).",
+  "if_broken": "Collection có vectorSize sai, nên mọi upsert sau đó lỗi kích thước.",
+  "curated_sha": "47a1439aca75"
+ },
+ "model/SaveVectorPointModel.java": {
+  "character": "Model đầu vào bất biến (@Builder, field final).",
+  "what": "id (pointId của client), vector (float[] thô, chưa chuẩn hóa), payload (Map, có thể null).",
+  "why": "Đơn vị đầu vào của upsert; tách khỏi request của web.",
+  "ux": "Mỗi phần tử trong mảng points mà client gửi khi upsert.",
+  "when": "Mỗi point trong EzyVectorService.upsert.",
+  "if_broken": "Upsert hỏng.",
+  "gotchas": [
+   "Không có kiểm tra nào ở tầng này: id ≤ 0 và vector sai kích thước đều đi thẳng vào DB."
+  ],
+  "curated_sha": "eb9dc0bdad65"
+ },
+ "result/EzyVectorCollectionVectorSizeResult.java": {
+  "character": "Query result projection (@EzyQueryResult), mutable.",
+  "what": "Hai cột id và vectorSize của collection, nhận từ JPQL 'SELECT e.id, e.vectorSize'.",
+  "why": "Thiếu nó thì mỗi upsert/delete/search phải tải cả entity collection (kèm cột config TEXT) chỉ để lấy 2 con số.",
+  "ux": "Vô hình.",
+  "when": "Đầu mỗi thao tác vector, qua findVectorSizeByName.",
+  "if_broken": "Mọi thao tác vector theo tên collection hỏng.",
+  "curated_sha": "e2eece90cd46"
+ },
+ "pagination/EzyVectorCollectionFilter.java": {
+  "character": "Interface đánh dấu (rỗng), sinh bởi PaginationClassesGenerator; kế thừa CommonStorageFilter của EzyPlatform.",
+  "what": "Kiểu filter riêng cho collection, dùng làm tham số kiểu của PaginationEzyVectorCollectionRepository/Service.",
+  "why": "Thiếu nó thì repository/service của collection có thể vô tình nhận filter của point hoặc segment mà trình biên dịch không phát hiện.",
+  "ux": "Vô hình.",
+  "when": "Chỉ ở mức kiểu lúc biên dịch.",
+  "if_broken": "Không biên dịch được tầng phân trang collection.",
+  "curated_sha": "12750fe37927"
+ },
+ "pagination/EzyVectorCollectionPointFilter.java": {
+  "character": "Interface đánh dấu (rỗng), sinh theo cùng khuôn với bản Collection và Segment.",
+  "what": "Kiểu filter riêng cho point.",
+  "why": "Giữ an toàn kiểu cho tầng phân trang point.",
+  "ux": "Vô hình.",
+  "when": "Chỉ ở mức kiểu.",
+  "if_broken": "Không biên dịch được tầng phân trang point.",
+  "curated_sha": "45e158b43a82"
+ },
+ "pagination/EzyVectorCollectionSegmentFilter.java": {
+  "character": "Interface đánh dấu (rỗng), sinh theo cùng khuôn với bản Collection và Point.",
+  "what": "Kiểu filter riêng cho segment.",
+  "why": "Giữ an toàn kiểu cho tầng phân trang segment.",
+  "ux": "Vô hình.",
+  "when": "Chỉ ở mức kiểu.",
+  "if_broken": "Không biên dịch được tầng phân trang segment.",
+  "curated_sha": "e36d4fd9004c"
+ },
+ "pagination/DefaultEzyVectorCollectionFilter.java": {
+  "character": "Filter bất biến (@Builder, field public final) sinh từ khuôn rồi chỉnh tay; EzyPlatform bind tham số JPQL theo tên field.",
+  "what": "Ráp điều kiện WHERE cho danh sách collection: status = :status, name LIKE '%:likeKeyword%', và (nếu có keywords/keywordPrefix) INNER JOIN DataIndex với dataType 'ezyvector_collections'.",
+  "why": "Thiếu nó thì trang danh sách collection của admin không lọc được theo tên và trạng thái.",
+  "ux": "Admin gõ một phần tên collection để lọc; lọc chạy được nhờ likeKeyword.",
+  "when": "AdminApiVectorCollectionController dựng nó cho mỗi request GET /vector-collections.",
+  "if_broken": "Lọc collection sai hoặc lỗi JPQL.",
+  "gotchas": [
+   "Khác hai bản Point/Segment: không có collectionId nhưng có thêm likeKeyword (LIKE '%…%' trên cột name, không dùng được index).",
+   "Nhánh keywords/keywordPrefix (JOIN DataIndex) không chạy trong thực tế: không có code nào ghi DataIndex cho kiểu dữ liệu ezyvector, và admin không truyền hai field này."
+  ],
+  "curated_sha": "3c12f76dedbe"
+ },
+ "pagination/DefaultEzyVectorCollectionPointFilter.java": {
+  "character": "Filter bất biến (@Builder, field public final), sinh theo khuôn; giống hệt bản Segment (chỉ khác dataType).",
+  "what": "Ráp WHERE cho danh sách point: collectionId = :collectionId (khi > 0), status = :status, và tùy chọn JOIN DataIndex với dataType 'ezyvector_collection_points'.",
+  "why": "Thiếu điều kiện collectionId thì trang point của một collection liệt kê lẫn point của mọi collection.",
+  "ux": "Admin chỉ thấy point của collection đang mở.",
+  "when": "AdminApiVectorCollectionController dựng nó cho GET /vector-collections/{collectionId}/points.",
+  "if_broken": "Trang point lẫn dữ liệu giữa các collection.",
+  "gotchas": [
+   "collectionId = 0 thì bỏ qua điều kiện, tức là liệt kê point của MỌI collection.",
+   "Nhánh keywords/keywordPrefix không chạy trong thực tế (không có DataIndex nào cho point)."
+  ],
+  "curated_sha": "87381dc58e73"
+ },
+ "pagination/DefaultEzyVectorCollectionSegmentFilter.java": {
+  "character": "Filter bất biến, sinh theo khuôn; giống hệt bản Point (chỉ khác dataType 'ezyvector_collection_segments').",
+  "what": "Ráp WHERE cho danh sách segment: collectionId (khi > 0), status, và tùy chọn JOIN DataIndex.",
+  "why": "Thiếu nó thì trang segment liệt kê segment của mọi collection.",
+  "ux": "Admin thấy segment của collection đang mở.",
+  "when": "AdminApiVectorCollectionController, GET /vector-collections/{collectionId}/segments.",
+  "if_broken": "Trang segment lẫn dữ liệu.",
+  "gotchas": [
+   "Như bản Point: collectionId = 0 bỏ qua lọc; nhánh DataIndex không chạy trong thực tế."
+  ],
+  "curated_sha": "ea750b9d18f9"
+ },
+ "pagination/EzyVectorCollectionPaginationParameter.java": {
+  "character": "Interface đánh dấu (rỗng) kế thừa CommonPaginationParameter.",
+  "what": "Kiểu chung cho các tham số phân trang của collection (IdAsc/IdDesc).",
+  "why": "Cho repository/service/converter của collection một kiểu tham số riêng, không lẫn với point/segment.",
+  "ux": "Vô hình.",
+  "when": "Mức kiểu.",
+  "if_broken": "Không biên dịch được.",
+  "curated_sha": "7752296b5cd9"
+ },
+ "pagination/EzyVectorCollectionPointPaginationParameter.java": {
+  "character": "Interface đánh dấu (rỗng), cùng khuôn.",
+  "what": "Kiểu chung cho tham số phân trang của point.",
+  "why": "An toàn kiểu cho tầng phân trang point.",
+  "ux": "Vô hình.",
+  "when": "Mức kiểu.",
+  "if_broken": "Không biên dịch được.",
+  "curated_sha": "eb0435e0ca71"
+ },
+ "pagination/EzyVectorCollectionSegmentPaginationParameter.java": {
+  "character": "Interface đánh dấu (rỗng), cùng khuôn.",
+  "what": "Kiểu chung cho tham số phân trang của segment.",
+  "why": "An toàn kiểu cho tầng phân trang segment.",
+  "ux": "Vô hình.",
+  "when": "Mức kiểu.",
+  "if_broken": "Không biên dịch được.",
+  "curated_sha": "fed9bb1ed588"
+ },
+ "pagination/IdAscEzyVectorCollectionPaginationParameter.java": {
+  "character": "Tham số phân trang kiểu keyset (mutable, Lombok), sinh theo khuôn; giống hệt bản Point/Segment.",
+  "what": "Phân trang theo id tăng dần: paginationCondition dựng điều kiện so sánh id qua makePaginationConditionAsc, orderBy qua makeOrderByAsc, isEmpty khi id null. sortOrder() trả về… ID_DESC.",
+  "why": "Thiếu nó thì sortOrder=ID_ASC từ admin API không có lớp tham số tương ứng, và không xem được collection cũ nhất trước.",
+  "ux": "Admin chọn sắp tăng dần theo id (nếu UI cho chọn).",
+  "when": "Khi request admin gửi sortOrder=ID_ASC; ParameterConverter tạo nó từ token trang hoặc từ id của phần tử cuối.",
+  "if_broken": "Phân trang tăng dần sai thứ tự hoặc lặp trang.",
+  "gotchas": [
+   "LỖI: sortOrder() trả EzyVectorCollectionPaginationSortOrder.ID_DESC thay vì ID_ASC; lỗi chép từ khuôn, có ở cả 3 bản IdAsc (Collection/Point/Segment), nên sửa một bản không sửa được hai bản kia. Biểu hiện cụ thể tùy vào cách EzyPlatform dùng sortOrder() (mã nguồn ezyplatform không có trong môi trường này nên chưa kiểm chứng được). Nếu nó dùng để dựng token trang tiếp như tên gọi gợi ý, thì từ trang 2 trở đi, danh sách tăng dần sẽ bị đọc như danh sách giảm dần."
+  ],
+  "issue": "bug",
+  "curated_sha": "43dde3d6d23f"
+ },
+ "pagination/IdAscEzyVectorCollectionPointPaginationParameter.java": {
+  "character": "Tham số phân trang keyset, sinh theo khuôn; giống hệt bản Collection/Segment.",
+  "what": "Phân trang point theo id tăng dần (makePaginationConditionAsc / makeOrderByAsc trên 'id'). sortOrder() trả ID_DESC.",
+  "why": "Thiếu nó thì không phân trang point theo thứ tự cũ nhất trước được.",
+  "ux": "Admin xem point theo thứ tự chèn vào.",
+  "when": "sortOrder=ID_ASC trên GET /vector-collections/{id}/points.",
+  "if_broken": "Phân trang point tăng dần sai.",
+  "gotchas": [
+   "LỖI: sortOrder() trả ID_DESC thay vì ID_ASC (cùng lỗi khuôn với 2 bản IdAsc còn lại; xem IdAscEzyVectorCollectionPaginationParameter)."
+  ],
+  "issue": "bug",
+  "curated_sha": "2448eff3b4aa"
+ },
+ "pagination/IdAscEzyVectorCollectionSegmentPaginationParameter.java": {
+  "character": "Tham số phân trang keyset, sinh theo khuôn; giống hệt bản Collection/Point.",
+  "what": "Phân trang segment theo id tăng dần. sortOrder() trả ID_DESC.",
+  "why": "Thiếu nó thì không phân trang segment tăng dần được.",
+  "ux": "Gần như không thấy được: mỗi collection chỉ có 1 segment, nên hiếm khi có trang 2.",
+  "when": "sortOrder=ID_ASC trên GET /vector-collections/{id}/segments.",
+  "if_broken": "Phân trang segment tăng dần sai (hiện thực tế không lộ ra vì chỉ có 1 segment).",
+  "gotchas": [
+   "LỖI: sortOrder() trả ID_DESC thay vì ID_ASC (cùng lỗi khuôn; xem IdAscEzyVectorCollectionPaginationParameter)."
+  ],
+  "issue": "bug",
+  "curated_sha": "865bcb887ef2"
+ },
+ "pagination/IdDescEzyVectorCollectionPaginationParameter.java": {
+  "character": "Tham số phân trang keyset (mutable, Lombok), sinh theo khuôn; là MẶC ĐỊNH của PaginationEzyVectorCollectionService.",
+  "what": "Phân trang theo id giảm dần (makePaginationConditionDesc / makeOrderByDesc trên 'id'); sortOrder() trả ID_DESC (đúng).",
+  "why": "Thiếu nó thì service không có tham số mặc định, nên trang đầu tiên không có thứ tự xác định.",
+  "ux": "Admin thấy collection mới tạo nhất ở đầu danh sách.",
+  "when": "Mọi request danh sách collection không chỉ định sortOrder, và khi sortOrder=ID_DESC.",
+  "if_broken": "Danh sách collection mặc định lỗi.",
+  "curated_sha": "16e2222fb1a7"
+ },
+ "pagination/IdDescEzyVectorCollectionPointPaginationParameter.java": {
+  "character": "Tham số phân trang keyset, sinh theo khuôn; mặc định của PaginationEzyVectorCollectionPointService.",
+  "what": "Phân trang point theo id giảm dần; sortOrder() trả ID_DESC.",
+  "why": "Thứ tự mặc định của trang point; thiếu nó thì trang point không có thứ tự ổn định.",
+  "ux": "Admin thấy point upsert gần nhất (dòng DB mới nhất) đầu tiên. Point được upsert lại giữ nguyên id dòng nên KHÔNG nhảy lên đầu.",
+  "when": "Mặc định của trang point.",
+  "if_broken": "Trang point lỗi.",
+  "curated_sha": "8aa432cb0c95"
+ },
+ "pagination/IdDescEzyVectorCollectionSegmentPaginationParameter.java": {
+  "character": "Tham số phân trang keyset, sinh theo khuôn; mặc định của PaginationEzyVectorCollectionSegmentService.",
+  "what": "Phân trang segment theo id giảm dần; sortOrder() trả ID_DESC.",
+  "why": "Thứ tự mặc định của trang segment.",
+  "ux": "Admin thấy segment (thực tế chỉ có 1).",
+  "when": "Mặc định của trang segment.",
+  "if_broken": "Trang segment lỗi.",
+  "curated_sha": "4ac48664f0b2"
+ },
+ "pagination/EzyVectorCollectionPaginationSortOrder.java": {
+  "character": "Enum khóa sắp xếp, sinh theo khuôn.",
+  "what": "ID_ASC, ID_DESC; tên enum là chuỗi sortOrder mà admin API nhận và là khóa trong map của ParameterConverter.",
+  "why": "Thiếu nó thì chuỗi sortOrder từ request không ánh xạ được tới lớp tham số.",
+  "ux": "Giá trị hợp lệ của tham số sortOrder trên API admin.",
+  "when": "ParameterConverter và sortOrder() của các lớp tham số.",
+  "if_broken": "Không phân trang được.",
+  "gotchas": [
+   "'dùng bởi 0' trong đồ thị vì nó chỉ được truy cập qua hằng enum (Enum.ID_ASC.toString()), mà AST không ghi nhận thành cạnh; thực tế ParameterConverter và cả 2 lớp tham số đều dùng."
+  ],
+  "curated_sha": "f35199041846"
+ },
+ "pagination/EzyVectorCollectionPointPaginationSortOrder.java": {
+  "character": "Enum khóa sắp xếp, cùng khuôn.",
+  "what": "ID_ASC, ID_DESC cho point.",
+  "why": "Ánh xạ sortOrder của trang point tới lớp tham số.",
+  "ux": "Giá trị hợp lệ của sortOrder trên API danh sách point.",
+  "when": "ParameterConverter và các lớp tham số point.",
+  "if_broken": "Không phân trang point được.",
+  "gotchas": [
+   "'dùng bởi 0' là do AST không thấy truy cập hằng enum; thực tế có 3 nơi dùng."
+  ],
+  "curated_sha": "f3a12b296b80"
+ },
+ "pagination/EzyVectorCollectionSegmentPaginationSortOrder.java": {
+  "character": "Enum khóa sắp xếp, cùng khuôn.",
+  "what": "ID_ASC, ID_DESC cho segment.",
+  "why": "Ánh xạ sortOrder của trang segment tới lớp tham số.",
+  "ux": "Giá trị hợp lệ của sortOrder trên API danh sách segment.",
+  "when": "ParameterConverter và các lớp tham số segment.",
+  "if_broken": "Không phân trang segment được.",
+  "gotchas": [
+   "'dùng bởi 0' là do AST không thấy truy cập hằng enum."
+  ],
+  "curated_sha": "e54ceee79693"
+ },
+ "pagination/EzyVectorCollectionPaginationParameterConverter.java": {
+  "character": "Converter, sinh theo khuôn; kế thừa ComplexPaginationParameterConverter<String, EzyVectorCollectionModel>; admin/web có subclass riêng.",
+  "what": "Đăng ký 2 bảng: chuỗi sortOrder → lớp tham số (ID_ASC → IdAsc…, ID_DESC → IdDesc…), dùng để giải mã token trang; và chuỗi sortOrder → hàm lấy tham số từ model (new IdXxx(model.getId())), dùng để dựng token trang tiếp/trước từ phần tử đầu/cuối.",
+  "why": "Thiếu nó thì token next/prev page không mã hóa/giải mã được, nên admin chỉ xem được trang đầu.",
+  "ux": "Nút trang tiếp/trước trên danh sách collection.",
+  "when": "Mỗi request phân trang collection.",
+  "if_broken": "Phân trang collection hỏng.",
+  "gotchas": [
+   "Đây là nơi duy nhất đặt hai lớp IdAsc/IdDesc cạnh nhau. Lỗi sortOrder() của IdAsc (trả ID_DESC) làm hai lớp không còn đối xứng với các khóa đăng ký ở đây."
+  ],
+  "curated_sha": "b4411d28a96a"
+ },
+ "pagination/EzyVectorCollectionPointPaginationParameterConverter.java": {
+  "character": "Converter, sinh theo khuôn; giống hệt bản Collection/Segment (chỉ khác kiểu).",
+  "what": "Ánh xạ sortOrder ↔ lớp tham số point, và model point → tham số theo id (dùng để dựng token trang).",
+  "why": "Thiếu nó thì trang point không chuyển trang được.",
+  "ux": "Nút trang tiếp/trước của danh sách point.",
+  "when": "Mỗi request phân trang point.",
+  "if_broken": "Phân trang point hỏng.",
+  "curated_sha": "b71305d837bf"
+ },
+ "pagination/EzyVectorCollectionSegmentPaginationParameterConverter.java": {
+  "character": "Converter, sinh theo khuôn; giống hệt bản Collection/Point.",
+  "what": "Ánh xạ sortOrder ↔ lớp tham số segment, và model segment → tham số theo id.",
+  "why": "Thiếu nó thì trang segment không chuyển trang được.",
+  "ux": "Nút trang tiếp/trước của danh sách segment (hiếm khi cần vì chỉ có 1 segment).",
+  "when": "Mỗi request phân trang segment.",
+  "if_broken": "Phân trang segment hỏng.",
+  "curated_sha": "64432fc11b57"
+ }
+}

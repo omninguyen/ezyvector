@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>__TITLE__</title>
+<style>
+  :root{
+    --bg:#0d0f14; --surface:#161923; --surface2:#1c2030; --border:#2a3042;
+    --text:#e6e8ec; --text2:#9aa3b2; --text3:#6b7280; --hc:#845ef7; --viol:#ff4d4f;
+    --l0:#868e96; --l1:#845ef7; --l2:#ff922b; --l3:#fab005;
+    --l4:#20c997; --l5:#4dabf7; --l6:#e64980; --l7:#5c7cfa;
+    --bug:#ff6b6b; --dead:#868e96; --duplicate:#fcc419;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .layout{display:flex;height:100vh}
+  #main{flex:1;overflow:auto;padding:24px 28px;position:relative}
+  #edges{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:visible}
+  #edges path{fill:none;stroke:#3a4256;stroke-width:1.1;opacity:.35;transition:opacity .15s}
+  #edges path.viol{stroke:var(--viol);opacity:.8;stroke-width:1.6}
+  #edges path.hi-out{stroke:var(--hc);stroke-width:2;opacity:.95}
+  #edges path.hi-in{stroke:var(--hc);stroke-width:1.6;opacity:.75;stroke-dasharray:4 3}
+  #edges path.dim{opacity:.03}
+  .content{position:relative;z-index:2}
+  .ttl{font-size:20px;margin:0 0 4px;font-weight:700}
+  .sub{color:var(--text2);font-size:13px;margin-bottom:6px}
+  .intro{color:var(--text2);font-size:12.5px;line-height:1.6;margin:0 0 8px;max-width:1100px}
+  .hint{color:var(--text3);font-size:11.5px;margin-bottom:14px}
+  .hint b{color:var(--text2)}
+  .lane{margin-bottom:22px;border-left:3px solid var(--lc);padding-left:14px}
+  .lane-h{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--lc);margin-bottom:2px}
+  .lane-sub{color:var(--text3);font-size:11.5px;margin-bottom:10px}
+  .groups{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+  .grp{display:flex;flex-wrap:wrap;gap:6px;max-width:100%}
+  .grp.multi{border:1px dashed var(--border);border-radius:10px;padding:6px;flex-basis:100%}
+  .node{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 22px 7px 11px;cursor:pointer;transition:.12s;min-width:0;max-width:100%;position:relative}
+  .node.cls{border-color:color-mix(in srgb,var(--lc) 55%,var(--border))}
+  .node:hover{border-color:var(--lc);background:var(--surface2)}
+  .node.sel{border-color:var(--lc);background:var(--surface2);box-shadow:0 0 0 2px var(--lc)}
+  .node.neigh-out{border-color:var(--hc)}
+  .node.neigh-in{border-color:var(--hc);border-style:dashed}
+  .node.faded{opacity:.25}
+  .node .lbl{font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:12px;overflow-wrap:anywhere}
+  .node .lbl .own{color:var(--text3)}
+  .node.cls .lbl{font-weight:700}
+  .node .deg{color:var(--text3);font-size:10.5px;margin-top:2px}
+  .node .dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:#3a4152}
+  .node.curated .dot{background:#20c997}
+  .node .iss{position:absolute;bottom:6px;right:6px;width:8px;height:8px;border-radius:2px}
+  .node.hit{outline:2px solid var(--l1);outline-offset:1px}
+  .node.hidden,.lane.hidden,.grp.hidden{display:none}
+  #panel{width:420px;flex-shrink:0;border-left:1px solid var(--border);background:var(--surface);overflow-y:auto;padding:22px 20px;z-index:3}
+  .p-empty{color:var(--text3);font-size:13px;line-height:1.7}
+  .p-title{font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:14px;font-weight:700;margin-top:10px;overflow-wrap:anywhere}
+  .p-file{font-family:monospace;font-size:11px;color:var(--text3);word-break:break-all;margin:4px 0 8px}
+  .p-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin:14px 0 4px}
+  .p-val{font-size:13.2px;line-height:1.6}
+  .p-deg{display:flex;gap:16px;margin:8px 0 4px}
+  .p-deg span{font-size:12px;color:var(--text2)}
+  .p-deg b{color:var(--text);font-size:15px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--lc);color:#0d0f14;margin-right:4px}
+  .ibadge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;color:#0d0f14}
+  .rel{font-size:12px;color:var(--text2);margin:3px 0;cursor:pointer;overflow-wrap:anywhere}
+  .rel:hover{color:var(--text)}
+  .rel .arrow{color:var(--text3);font-family:monospace}
+  .rel .rt{color:var(--text3);font-size:10px;margin-left:4px}
+  .rel .rv{color:var(--viol);font-size:10px;margin-left:4px}
+  .warn{background:#2a1e14;border-left:3px solid var(--l3);padding:9px 12px;border-radius:6px;font-size:12.5px;margin-top:8px;color:#ffd8a8}
+  .conc{background:#16202e;border-left:3px solid var(--l5);padding:9px 12px;border-radius:6px;font-size:12.5px;color:#cfe6ff}
+  .clr{float:right;font-size:11px;color:var(--text3);cursor:pointer;border:1px solid var(--border);border-radius:5px;padding:2px 8px}
+  .clr:hover{color:var(--text)}
+  .searchbar{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  #search{flex:1;min-width:220px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;padding:9px 12px;outline:none}
+  #search:focus{border-color:var(--l1)}
+  .scount{font-size:11.5px;color:var(--text3);white-space:nowrap}
+  .cbox{font-size:11.5px;color:var(--text2);display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+  .results{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .results:empty{display:none}
+  .rchip{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer;font-family:"SFMono-Regular",Menlo,Consolas,monospace;font-size:12px;display:flex;align-items:center;gap:6px}
+  .rchip:hover{border-color:var(--l1)}
+  .rchip .rlayer{width:8px;height:8px;border-radius:2px}
+  .rchip .rdot{width:6px;height:6px;border-radius:50%}
+  .rchip .rfile{color:var(--text3);font-size:10px}
+  .filterbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .fl{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-right:2px}
+  .fchip{font-size:11px;padding:3px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text3);cursor:pointer;display:inline-flex;align-items:center;gap:5px;user-select:none}
+  .fchip.on{color:var(--text);border-color:var(--fc);background:color-mix(in srgb, var(--fc) 16%, var(--surface))}
+  .fchip .fdot{width:8px;height:8px;border-radius:2px;background:var(--fc)}
+  .fchip:not(.on) .fdot{opacity:.3}
+  .btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text3);cursor:pointer}
+  .btn:hover{color:var(--text);border-color:var(--l1)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--text3);margin-bottom:14px}
+  .legend .sw{display:inline-block;width:18px;height:0;border-top:2px solid var(--text3);vertical-align:middle;margin-right:5px}
+  .legend .sw.dash{border-top-style:dashed}
+  .legend .sw.red{border-top-color:var(--viol)}
+  .legend .sq{display:inline-block;width:8px;height:8px;border-radius:2px;vertical-align:middle;margin-right:5px}
+  ul.gl{margin:6px 0 0;padding-left:18px}
+  ul.gl li{margin:3px 0}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div id="main">
+    <svg id="edges"></svg>
+    <div class="content">
+      <div class="ttl">__TITLE__</div>
+      <div class="sub">__SUBTITLE__</div>
+      <p class="intro" id="intro"></p>
+      <div class="hint">Mỗi đường là một quan hệ do AST trích xuất (không có cạnh tự suy). Bấm một node: đường <b>liền</b> = node đó dùng gì, đường <b>đứt</b> = ai dùng nó. Khung nét đứt gom các method của cùng một class.</div>
+      <div class="searchbar">
+        <input id="search" type="text" autocomplete="off">
+        <span id="searchcount" class="scount"></span>
+        <label class="cbox"><input type="checkbox" id="onlyuncurated"> chỉ node chưa curate</label>
+      </div>
+      <div class="filterbar"><span class="fl">Lane</span><span id="layerchips"></span></div>
+      <div class="filterbar"><span class="fl">Loại cạnh</span><span id="relchips"></span><span class="btn" id="resetfilters">Đặt lại</span></div>
+      <div class="filterbar" id="issuebar" style="display:none"><span class="fl">Lỗi</span><span id="issuechips"></span></div>
+      <div class="legend" id="legend"></div>
+      <div id="results" class="results"></div>
+      <div id="lanes"></div>
+    </div>
+  </div>
+  <aside id="panel"></aside>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script id="curation" type="application/json">__CURATION__</script>
+<script id="meta" type="application/json">__META__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const CUR = JSON.parse(document.getElementById('curation').textContent);
+const META = JSON.parse(document.getElementById('meta').textContent);
+// Lane lấy từ meta; màu gán theo chỉ số trong bảng màu, không cố định theo dự án.
+const LAYER_PALETTE = ['--l0','--l1','--l2','--l3','--l4','--l5','--l6','--l7'];
+const LAYERS = (__LAYERS__).map((l, i) => ({ ...l, c: LAYER_PALETTE[i % LAYER_PALETTE.length] }));
+const ISSUE_NAMES = {bug:'bug', dead:'dead (không chạy)', duplicate:'duplicate (trùng lặp)'};
+const REL_NAMES = {calls:'calls (gọi)', references:'references (tham chiếu kiểu)', imports:'imports', method:'method (class → method)', contains:'contains (class → class lồng)', implements:'implements', inherits:'inherits'};
+const byId = Object.fromEntries(DATA.nodes.map(n=>[n.id,n]));
+const layerOf = id => LAYERS.find(l=>l.id===id)||LAYERS[0];
+const layerColor = id => `var(${layerOf(id).c})`;
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const curOf = n => CUR[n.key] || {};
+const isCurated = n => !!curOf(n).what;
+const issueOf = n => curOf(n).issue || null;
+// Nhãn đã được khử trùng lặp ở bước arrange (method có tiền tố Class.); ở đây chỉ tách phần chủ sở hữu để tô mờ.
+const labelHTML = n => { const i = n.label.lastIndexOf('.'); return n.kind==='class' || i<0 ? esc(n.label) : `<span class="own">${esc(n.label.slice(0,i+1))}</span>${esc(n.label.slice(i+1))}`; };
+
+document.getElementById('intro').textContent = META.intro || '';
+document.getElementById('search').placeholder = `Tìm trong ${DATA.nodes.length} node theo tên, method hoặc đường dẫn…`;
+
+const nodeEls = {};
+const outMap = {}, inMap = {};
+DATA.edges.forEach(e=>{ (outMap[e.s]=outMap[e.s]||[]).push(e); (inMap[e.t]=inMap[e.t]||[]).push(e); });
+const VIOL_COUNT = DATA.edges.filter(e=>e.viol).length;
+
+const lanesEl = document.getElementById('lanes');
+LAYERS.forEach(L=>{
+  const ns = DATA.nodes.filter(n=>n.layer===L.id);
+  if(!ns.length) return;
+  const lane = document.createElement('div');
+  lane.className='lane'; lane.dataset.layer=L.id; lane.style.setProperty('--lc',`var(${L.c})`);
+  lane.innerHTML = `<div class="lane-h">${L.id} · ${esc(L.name)} <span style="color:var(--text3);font-weight:400">(${ns.length})</span></div><div class="lane-sub">${esc(L.sub)}</div>`;
+  const groupsEl = document.createElement('div'); groupsEl.className='groups';
+  // Gom theo file: card class trước, sau đó method/class lồng theo số dòng.
+  const byFile = {};
+  ns.forEach(n=>{ (byFile[n.file]=byFile[n.file]||[]).push(n); });
+  const files = Object.keys(byFile).sort((a,b)=>{
+    const oa = byFile[a].reduce((s,n)=>s+n.out,0), ob = byFile[b].reduce((s,n)=>s+n.out,0);
+    return (byFile[b].length>1)-(byFile[a].length>1) || ob-oa || a.localeCompare(b);
+  });
+  files.forEach(f=>{
+    const g = document.createElement('div'); g.className = 'grp' + (byFile[f].length>1?' multi':'');
+    byFile[f].sort((a,b)=>(a.kind!=='class')-(b.kind!=='class') || a.line-b.line).forEach(n=>{
+      const el = document.createElement('div');
+      const iss = issueOf(n);
+      el.className='node'+(n.kind==='class'?' cls':'')+(isCurated(n)?' curated':'');
+      el.style.setProperty('--lc',`var(${L.c})`); el.dataset.id=n.id;
+      el.innerHTML=`<span class="dot" title="${isCurated(n)?'đã curate':'chưa curate'}"></span>`+
+        (iss?`<span class="iss" style="background:var(--${iss})" title="${esc(ISSUE_NAMES[iss]||iss)}"></span>`:'')+
+        `<div class="lbl">${labelHTML(n)}</div><div class="deg">dùng bởi ${n.in} · dùng ${n.out}</div>`;
+      el.onclick=(ev)=>{ev.stopPropagation();select(n.id);};
+      g.appendChild(el); nodeEls[n.id]=el;
+    });
+    groupsEl.appendChild(g);
+  });
+  lane.appendChild(groupsEl); lanesEl.appendChild(lane);
+});
+
+// ── Bộ lọc ─────────────────────────────────────────────────────
+const activeLayers = new Set(LAYERS.map(l=>l.id));
+const REL_TYPES = [...new Set(DATA.edges.map(e=>e.r))];
+const activeRels = new Set(REL_TYPES);
+const ISSUE_TYPES = [...new Set(DATA.nodes.map(issueOf).filter(Boolean))];
+const activeIssues = new Set();   // rỗng = không lọc theo lỗi
+const nodeVisible = n => activeLayers.has(n.layer) && (!activeIssues.size || activeIssues.has(issueOf(n)));
+const edgeVisible = e => activeRels.has(e.r) && nodeVisible(byId[e.s]) && nodeVisible(byId[e.t]);
+
+const svg = document.getElementById('edges');
+const SVGNS='http://www.w3.org/2000/svg';
+const mainEl = document.getElementById('main');
+function drawEdges(){
+  svg.innerHTML='';
+  svg.style.height = mainEl.scrollHeight+'px'; svg.style.width = mainEl.scrollWidth+'px';
+  const ox = mainEl.scrollLeft, oy = mainEl.scrollTop;
+  const base = mainEl.getBoundingClientRect();
+  const box = el => { const r=el.getBoundingClientRect(); return {x:r.left-base.left+ox+r.width/2, top:r.top-base.top+oy, bot:r.top-base.top+oy+r.height}; };
+  DATA.edges.forEach(e=>{
+    if(!edgeVisible(e)) return;
+    const a=nodeEls[e.s], b=nodeEls[e.t]; if(!a||!b) return;
+    const p1=box(a), p2=box(b);
+    let y1, y2;
+    if(p2.top >= p1.bot){ y1=p1.bot; y2=p2.top; }
+    else if(p1.top >= p2.bot){ y1=p1.top; y2=p2.bot; }
+    else { y1=p1.bot; y2=p2.bot; }
+    const dy=Math.abs(y2-y1);
+    const c=Math.min(Math.max(dy*0.4,24),110);
+    const cy1 = y1<=y2 ? y1+c : y1-c;
+    const cy2 = y2>=y1 ? y2-c : y2+c;
+    const path=document.createElementNS(SVGNS,'path');
+    path.setAttribute('d',`M ${p1.x} ${y1} C ${p1.x} ${cy1}, ${p2.x} ${cy2}, ${p2.x} ${y2}`);
+    path.dataset.s=e.s; path.dataset.t=e.t;
+    if(e.viol) path.classList.add('viol');
+    svg.appendChild(path);
+  });
+  if(curSel) paintPaths(curSel);
+}
+window.addEventListener('load',drawEdges);
+window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(drawEdges,150);});
+
+let curSel=null;
+function paintPaths(id){
+  document.documentElement.style.setProperty('--hc',layerColor(byId[id].layer));
+  svg.querySelectorAll('path').forEach(p=>{
+    p.classList.remove('hi-out','hi-in','dim');
+    if(p.dataset.s===id) p.classList.add('hi-out');
+    else if(p.dataset.t===id) p.classList.add('hi-in');
+    else p.classList.add('dim');
+  });
+}
+// Gợi ý trong panel sinh từ dữ liệu (top-3 theo out), không viết cứng.
+function emptyPanelHTML(){
+  const top = [...DATA.nodes].sort((a,b)=>b.out-a.out).slice(0,3)
+    .map(n=>`<b>${esc(n.label)}</b> (dùng ${n.out})`).join(', ');
+  return `<div class="p-empty">Chọn một node để xem vai trò và làm nổi các kết nối của nó.${top?`<br><br>Nên bắt đầu từ các node dùng nhiều thứ nhất: ${top}.`:''}</div>`;
+}
+function clearSel(){
+  curSel=null;
+  Object.values(nodeEls).forEach(el=>el.classList.remove('sel','neigh-out','neigh-in','faded'));
+  svg.querySelectorAll('path').forEach(p=>p.classList.remove('hi-out','hi-in','dim'));
+  document.getElementById('panel').innerHTML=emptyPanelHTML();
+}
+mainEl.addEventListener('click',clearSel);
+
+function select(id){
+  curSel=id;
+  const n=byId[id];
+  const outs=outMap[id]||[], ins=inMap[id]||[];
+  const neighOut=new Set(outs.map(e=>e.t)), neighIn=new Set(ins.map(e=>e.s));
+  document.documentElement.style.setProperty('--hc',layerColor(n.layer));
+  Object.entries(nodeEls).forEach(([nid,el])=>{
+    el.classList.remove('sel','neigh-out','neigh-in','faded');
+    if(nid===id) el.classList.add('sel');
+    else if(neighOut.has(nid)) el.classList.add('neigh-out');
+    else if(neighIn.has(nid)) el.classList.add('neigh-in');
+    else el.classList.add('faded');
+  });
+  paintPaths(id);
+  renderPanel(n,outs,ins);
+}
+
+const FIELDS = [['character','Bản chất'],['what','Làm gì'],['why','Tại sao (thiếu nó thì…)'],['ux','Người dùng thấy gì'],['when','Khi nào chạy'],['if_broken','Nếu hỏng']];
+function relList(list, dir){
+  return list.map(e=>{const o=byId[dir==='out'?e.t:e.s]; if(!o) return '';
+    return `<div class="rel" onclick="select('${o.id}')"><span class="arrow">${dir==='out'?'→':'←'}</span> ${esc(o.label)}<span class="rt">${esc(e.r)}${e.inferred?' · suy luận AST':''}${e.n>1?' ×'+e.n:''}</span>${e.viol?'<span class="rv">vi phạm luật</span>':''}</div>`;}).join('');
+}
+function renderPanel(n,outs,ins){
+  const cur=curOf(n), L=layerOf(n.layer), iss=cur.issue;
+  let h=`<span class="clr" onclick="clearSel()">✕ bỏ chọn</span><span class="badge" style="--lc:var(${L.c})">${L.id} · ${esc(L.name)}</span>`;
+  if(iss) h+=`<span class="ibadge" style="background:var(--${iss})">${esc(ISSUE_NAMES[iss]||iss)}</span>`;
+  h+=`<div class="p-title">${esc(n.label)}</div><div class="p-file">${esc(n.file)}:${n.line}</div>`;
+  h+=`<div class="p-deg"><span><b>${n.in}</b> dùng bởi</span><span><b>${n.out}</b> dùng</span></div>`;
+  if(!cur.what){ h+=`<div class="warn">Node chưa được curate. Mô tả chỉ được viết sau khi đọc trọn file.</div>`; }
+  FIELDS.forEach(([k,t])=>{ if(cur[k]) h+=`<div class="p-lbl">${t}</div><div class="p-val">${esc(cur[k])}</div>`; });
+  if(cur.concurrency){ h+=`<div class="p-lbl">Concurrency</div><div class="conc">${esc(cur.concurrency)}</div>`; }
+  const g = Array.isArray(cur.gotchas)?cur.gotchas:(cur.gotchas?[cur.gotchas]:[]);
+  if(g.length){ h+=`<div class="p-lbl">Gotchas</div><div class="warn"><ul class="gl">${g.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`; }
+  if(outs.length) h+=`<div class="p-lbl">Dùng (${outs.length})</div>`+relList(outs,'out');
+  if(ins.length) h+=`<div class="p-lbl">Dùng bởi (${ins.length})</div>`+relList(ins,'in');
+  if(cur.curated_sha) h+=`<div class="p-file" style="margin-top:16px">curate theo commit ${esc(META.curated_against||'?')} · sha ${esc(cur.curated_sha)}</div>`;
+  document.getElementById('panel').innerHTML=h;
+}
+
+// ── Tìm kiếm ───────────────────────────────────────────────────
+const totalCurated = DATA.nodes.filter(isCurated).length;
+const searchEl = document.getElementById('search');
+const resultsEl = document.getElementById('results');
+const onlyUncEl = document.getElementById('onlyuncurated');
+document.getElementById('searchcount').textContent = `${totalCurated}/${DATA.nodes.length} đã curate`;
+function jumpTo(id){
+  const el = nodeEls[id]; if(!el) return;
+  Object.values(nodeEls).forEach(e=>e.classList.remove('hit'));
+  el.classList.add('hit');
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  select(id);
+}
+function runSearch(){
+  const q = searchEl.value.trim().toLowerCase();
+  const onlyUnc = onlyUncEl.checked;
+  resultsEl.innerHTML='';
+  if(!q && !onlyUnc) return;
+  const matches = DATA.nodes.filter(n=>{
+    const hit = !q || n.label.toLowerCase().includes(q) || n.key.toLowerCase().includes(q);
+    return hit && (!onlyUnc || !isCurated(n));
+  }).sort((a,b)=>b.out-a.out).slice(0,40);
+  matches.forEach(n=>{
+    const chip=document.createElement('div'); chip.className='rchip';
+    chip.innerHTML=`<span class="rlayer" style="background:${layerColor(n.layer)}"></span>${esc(n.label)}<span class="rdot" style="background:${isCurated(n)?'#20c997':'#3a4152'}"></span><span class="rfile">${esc(n.file)}</span>`;
+    chip.onclick=()=>jumpTo(n.id);
+    resultsEl.appendChild(chip);
+  });
+  if(!matches.length) resultsEl.innerHTML='<div class="rfile" style="padding:4px">Không có kết quả</div>';
+}
+searchEl.addEventListener('input', runSearch);
+onlyUncEl.addEventListener('change', runSearch);
+
+function chip(parent, text, color, on, onToggle){
+  const c=document.createElement('span'); c.className='fchip'+(on?' on':''); c.style.setProperty('--fc',color);
+  c.innerHTML=`<span class="fdot"></span>${esc(text)}`;
+  c.onclick=()=>{ c.classList.toggle('on'); onToggle(c.classList.contains('on')); applyFilters(); };
+  parent.appendChild(c); return c;
+}
+function buildFilterChips(){
+  const lc = document.getElementById('layerchips');
+  LAYERS.forEach(L=>{ if(DATA.nodes.some(n=>n.layer===L.id)) chip(lc, `${L.id}·${L.name}`, `var(${L.c})`, true, on=>on?activeLayers.add(L.id):activeLayers.delete(L.id)); });
+  const rc = document.getElementById('relchips');
+  REL_TYPES.forEach(r=>{ const cnt=DATA.edges.filter(e=>e.r===r).length; chip(rc, `${REL_NAMES[r]||r} · ${cnt}`, 'var(--l1)', true, on=>on?activeRels.add(r):activeRels.delete(r)); });
+  // Bộ lọc lỗi chỉ xuất hiện khi thật sự có node bị gắn cờ.
+  if(ISSUE_TYPES.length){
+    document.getElementById('issuebar').style.display='';
+    const ic = document.getElementById('issuechips');
+    ISSUE_TYPES.forEach(t=>{ const cnt=DATA.nodes.filter(n=>issueOf(n)===t).length; chip(ic, `${ISSUE_NAMES[t]||t} · ${cnt}`, `var(--${t})`, false, on=>on?activeIssues.add(t):activeIssues.delete(t)); });
+  }
+}
+function applyFilters(){
+  Object.entries(nodeEls).forEach(([id,el])=> el.classList.toggle('hidden', !nodeVisible(byId[id])));
+  // Khung nhóm (một file) ẩn luôn khi không còn node nào hiện, để không để lại khung rỗng hay khoảng trống.
+  document.querySelectorAll('.grp').forEach(g=> g.classList.toggle('hidden', !g.querySelector('.node:not(.hidden)')));
+  document.querySelectorAll('.lane').forEach(lane=>{
+    const lid=Number(lane.dataset.layer);
+    lane.classList.toggle('hidden', !activeLayers.has(lid) || !DATA.nodes.some(n=>n.layer===lid && nodeVisible(n)));
+  });
+  drawEdges();   // drawEdges chỉ vẽ cạnh thỏa bộ lọc, nên lọc không bị mất khi vẽ lại
+}
+document.getElementById('resetfilters').onclick=()=>{
+  LAYERS.forEach(l=>activeLayers.add(l.id)); REL_TYPES.forEach(r=>activeRels.add(r)); activeIssues.clear();
+  document.querySelectorAll('#layerchips .fchip, #relchips .fchip').forEach(c=>c.classList.add('on'));
+  document.querySelectorAll('#issuechips .fchip').forEach(c=>c.classList.remove('on'));
+  applyFilters();
+};
+buildFilterChips();
+
+// Chú giải: chỉ hiện những gì đồ thị này thật sự dùng.
+const lg = [`<span><span class="sw"></span>dùng (khi chọn: liền)</span>`, `<span><span class="sw dash"></span>dùng bởi (khi chọn)</span>`];
+if(META.rule) lg.push(`<span><span class="sw red"></span>vi phạm luật phụ thuộc: ${VIOL_COUNT} cạnh. ${esc(META.rule)}</span>`);
+lg.push(`<span><span class="sq" style="background:#20c997;border-radius:50%"></span>đã curate</span>`);
+if(ISSUE_TYPES.length) lg.push(`<span>ô vuông góc dưới = cờ lỗi (${ISSUE_TYPES.map(t=>`<span class="sq" style="background:var(--${t})"></span>${esc(t)}`).join(' ')})</span>`);
+document.getElementById('legend').innerHTML = lg.join('');
+document.getElementById('panel').innerHTML = emptyPanelHTML();
+</script>
+</body>
+</html>
