@@ -30,6 +30,7 @@ public class AdminSaveEzyVectorCollectionsSettingRequest {
     private String vectorCollectionsApiKey;
     @JsonDeserialize(using = SetStringDeserializer.class)
     private Set<String> vectorCollectionsAllowedIps;
+    private Integer vectorCollectionsMaxQueryLimit;
 
     public Set<String> getVectorCollectionsAllowedIps() {
         return vectorCollectionsAllowedIps != null

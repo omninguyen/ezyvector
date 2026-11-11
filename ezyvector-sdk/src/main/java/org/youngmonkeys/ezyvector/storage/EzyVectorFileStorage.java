@@ -42,6 +42,15 @@ public class EzyVectorFileStorage {
     private static final String POINT_IDS_FILE = "point_ids.dat";
     private static final String BACKFILL_PROGRESS_FILE = "backfill.progress";
     private static final String HNSW_FILE = "hnsw.dat";
+    private static final Comparator<SearchResult> BEST_FIRST =
+        (a, b) -> {
+            int byScore = Float.compare(b.getScore(), a.getScore());
+            return byScore != 0
+                ? byScore
+                : Long.compare(a.getId(), b.getId());
+        };
+    private static final Comparator<SearchResult> WORST_FIRST =
+        BEST_FIRST.reversed();
 
     private final Path dataDir;
 
@@ -136,7 +145,22 @@ public class EzyVectorFileStorage {
         float[] query,
         int limit
     ) throws IOException {
+        return search(collectionId, vectorSize, query, 0, limit);
+    }
+
+    public List<SearchResult> search(
+        long collectionId,
+        long vectorSize,
+        float[] query,
+        int offset,
+        int limit
+    ) throws IOException {
         validateVector(vectorSize, query);
+        if (offset < 0) {
+            throw new IllegalArgumentException(
+                "offset must not be negative: " + offset
+            );
+        }
         if (limit <= 0) {
             return Collections.emptyList();
         }
@@ -165,10 +189,9 @@ public class EzyVectorFileStorage {
                 return Collections.emptyList();
             }
             float[] normalizedQuery = normalize(query);
-            PriorityQueue<SearchResult> queue = new PriorityQueue<>(
-                limit,
-                Comparator.comparingDouble(SearchResult::getScore)
-            );
+            long window = (long) offset + limit;
+            PriorityQueue<SearchResult> queue =
+                new PriorityQueue<>(WORST_FIRST);
             long maxVectorsPerChunk = Math.max(
                 1L,
                 MAX_MAPPED_BYTES / vectorByteSize
@@ -183,15 +206,18 @@ public class EzyVectorFileStorage {
                     vectorByteSize,
                     slot,
                     chunkSlots,
-                    limit,
+                    window,
                     queue
                 );
             }
             List<SearchResult> results = new ArrayList<>(queue);
-            results.sort(
-                (a, b) -> Float.compare(b.getScore(), a.getScore())
+            if (offset >= results.size()) {
+                return Collections.emptyList();
+            }
+            results.sort(BEST_FIRST);
+            return new ArrayList<>(
+                results.subList(offset, results.size())
             );
-            return results;
         }
     }
 
@@ -261,7 +287,7 @@ public class EzyVectorFileStorage {
         long vectorByteSize,
         long slot,
         long chunkSlots,
-        int limit,
+        long window,
         PriorityQueue<SearchResult> queue
     ) throws IOException {
         MappedByteBuffer vectorBuffer = vectorChannel.map(
@@ -288,9 +314,9 @@ public class EzyVectorFileStorage {
                 vectorSize
             );
             SearchResult result = new SearchResult(pointId, score);
-            if (queue.size() < limit) {
+            if (queue.size() < window) {
                 queue.add(result);
-            } else if (score > queue.peek().getScore()) {
+            } else if (WORST_FIRST.compare(result, queue.peek()) > 0) {
                 queue.poll();
                 queue.add(result);
             }

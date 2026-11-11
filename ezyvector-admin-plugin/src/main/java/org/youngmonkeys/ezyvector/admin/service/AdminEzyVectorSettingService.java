@@ -26,6 +26,7 @@ import static com.tvd12.ezyfox.io.EzyStrings.isNotBlank;
 import static org.youngmonkeys.ezyplatform.constant.CommonConstants.PATTERN_HIDDEN_PASSWORD;
 import static org.youngmonkeys.ezyvector.constant.EzyVectorConstants.SETTING_NAME_VECTOR_COLLECTIONS_ALLOWED_IPS;
 import static org.youngmonkeys.ezyvector.constant.EzyVectorConstants.SETTING_NAME_VECTOR_COLLECTIONS_API_KEY;
+import static org.youngmonkeys.ezyvector.constant.EzyVectorConstants.SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT;
 
 @Service
 public class AdminEzyVectorSettingService extends EzyVectorSettingService {
@@ -54,6 +55,13 @@ public class AdminEzyVectorSettingService extends EzyVectorSettingService {
         settingService.setArrayValue(
             SETTING_NAME_VECTOR_COLLECTIONS_ALLOWED_IPS,
             values
+        );
+    }
+
+    public void setVectorCollectionsMaxQueryLimit(int value) {
+        settingService.setIntValue(
+            SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT,
+            value
         );
     }
 }
