@@ -50,6 +50,10 @@ public class AdminEzyVectorSettingController {
                 "vectorCollectionsAllowedIps",
                 vectorCollectionsAllowedIps
             )
+            .addVariable(
+                "vectorCollectionsMaxQueryLimit",
+                ezyVectorSettingService.getMaxQueryLimit()
+            )
             .build();
     }
 }

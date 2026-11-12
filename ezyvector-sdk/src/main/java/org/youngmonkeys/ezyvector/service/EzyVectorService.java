@@ -175,6 +175,16 @@ public class EzyVectorService extends EzyLoggable {
         float[] vector,
         int limit
     ) throws Exception {
+        return search(collectionName, vector, 0, limit);
+    }
+
+    public List<EzyVectorSearchResultModel> search(
+        String collectionName,
+        float[] vector,
+        int offset,
+        int limit
+    ) throws Exception {
+        validateSearchWindow(offset, limit);
         EzyVectorCollectionVectorSizeResult collection =
             getVectorSizeResultEntityByNameOrThrow(
                 collectionName
@@ -188,24 +198,55 @@ public class EzyVectorService extends EzyLoggable {
             vectorSize
         );
         if (hnswIndex != null) {
+            int window = offset + limit;
             List<HnswIndex.SearchResult> hits = hnswIndex.search(
                 vector,
-                limit,
-                Math.max(
-                    limit * EXPLORATION_FACTOR_SEARCH_MULTIPLIER,
-                    MIN_EXPLORATION_FACTOR_SEARCH
-                )
+                window,
+                toExplorationFactor(window)
             );
-            return toSearchResults(collectionId, hits);
+            return toSearchResults(
+                collectionId,
+                hits.subList(Math.min(offset, hits.size()), hits.size())
+            );
         }
         List<EzyVectorFileStorage.SearchResult> hits =
             newVectorFileStorage().search(
                 collectionId,
                 collection.getVectorSize(),
                 vector,
+                offset,
                 limit
             );
         return toExactSearchResults(collectionId, hits);
+    }
+
+    private void validateSearchWindow(int offset, int limit) {
+        if (offset < 0) {
+            throw new IllegalArgumentException(
+                "offset must not be negative: " + offset
+            );
+        }
+        if (limit < 1) {
+            throw new IllegalArgumentException(
+                "limit must be positive: " + limit
+            );
+        }
+        int maxQueryLimit = ezyVectorSettingService.getMaxQueryLimit();
+        long window = (long) offset + limit;
+        if (window > maxQueryLimit) {
+            throw new IllegalArgumentException(
+                "offset + limit must not exceed " + maxQueryLimit +
+                    ": " + window
+            );
+        }
+    }
+
+    private static int toExplorationFactor(int window) {
+        long explorationFactor = Math.max(
+            (long) window * EXPLORATION_FACTOR_SEARCH_MULTIPLIER,
+            MIN_EXPLORATION_FACTOR_SEARCH
+        );
+        return (int) Math.min(explorationFactor, Integer.MAX_VALUE);
     }
 
     private List<EzyVectorSearchResultModel> toSearchResults(
