@@ -26,9 +26,12 @@ public final class EzyVectorConstants {
     public static final long FIRST_VERSION = 1L;
 
     public static final String DEFAULT_VECTOR_DATA_DIR = "data/ezyvector";
+    public static final int DEFAULT_MAX_QUERY_LIMIT = 10_000;
 
     public static final String SETTING_NAME_VECTOR_DATA_DIR =
         "ezyrag_vector_data_dir";
+    public static final String SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT =
+        "ezyvector_vector_collections_max_query_limit";
     public static final String SETTING_NAME_VECTOR_COLLECTIONS_ALLOWED_IPS =
         "ezyvector_vector_collections_allowed_ips";
     public static final String SETTING_NAME_VECTOR_COLLECTIONS_API_KEY =

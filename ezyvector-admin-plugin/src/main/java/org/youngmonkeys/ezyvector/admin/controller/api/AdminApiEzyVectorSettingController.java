@@ -18,6 +18,7 @@ package org.youngmonkeys.ezyvector.admin.controller.api;
 
 import com.tvd12.ezyfox.annotation.EzyFeature;
 import com.tvd12.ezyhttp.core.annotation.Description;
+import com.tvd12.ezyhttp.core.exception.HttpBadRequestException;
 import com.tvd12.ezyhttp.core.response.ResponseEntity;
 import com.tvd12.ezyhttp.server.core.annotation.Api;
 import com.tvd12.ezyhttp.server.core.annotation.Authenticated;
@@ -27,6 +28,8 @@ import com.tvd12.ezyhttp.server.core.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import org.youngmonkeys.ezyvector.admin.request.AdminSaveEzyVectorCollectionsSettingRequest;
 import org.youngmonkeys.ezyvector.admin.service.AdminEzyVectorSettingService;
+
+import java.util.Collections;
 
 @Api
 @Authenticated
@@ -42,12 +45,26 @@ public class AdminApiEzyVectorSettingController {
     public ResponseEntity settingsPut(
         @RequestBody AdminSaveEzyVectorCollectionsSettingRequest request
     ) {
+        Integer maxQueryLimit = request.getVectorCollectionsMaxQueryLimit();
+        if (maxQueryLimit != null && maxQueryLimit <= 0) {
+            throw new HttpBadRequestException(
+                Collections.singletonMap(
+                    "vectorCollectionsMaxQueryLimit",
+                    "invalid"
+                )
+            );
+        }
         ezyVectorSettingService.setVectorCollectionsApiKey(
             request.getVectorCollectionsApiKey()
         );
         ezyVectorSettingService.setVectorCollectionsAllowedIps(
             request.getVectorCollectionsAllowedIps()
         );
+        if (maxQueryLimit != null) {
+            ezyVectorSettingService.setVectorCollectionsMaxQueryLimit(
+                maxQueryLimit
+            );
+        }
         return ResponseEntity.noContent();
     }
 }

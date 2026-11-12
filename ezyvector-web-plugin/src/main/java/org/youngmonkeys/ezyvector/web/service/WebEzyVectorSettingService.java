@@ -18,6 +18,7 @@ package org.youngmonkeys.ezyvector.web.service;
 
 import com.tvd12.ezyhttp.core.codec.SingletonStringDeserializer;
 import com.tvd12.ezyhttp.server.core.annotation.Service;
+import org.youngmonkeys.ezyplatform.util.Numbers;
 import org.youngmonkeys.ezyplatform.web.service.WebSettingService;
 import org.youngmonkeys.ezyvector.service.EzyVectorSettingService;
 
@@ -26,6 +27,7 @@ import java.util.Set;
 
 import static org.youngmonkeys.ezyvector.constant.EzyVectorConstants.SETTING_NAME_VECTOR_COLLECTIONS_ALLOWED_IPS;
 import static org.youngmonkeys.ezyvector.constant.EzyVectorConstants.SETTING_NAME_VECTOR_COLLECTIONS_API_KEY;
+import static org.youngmonkeys.ezyvector.constant.EzyVectorConstants.SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT;
 
 @Service
 public class WebEzyVectorSettingService extends EzyVectorSettingService {
@@ -59,6 +61,24 @@ public class WebEzyVectorSettingService extends EzyVectorSettingService {
             SETTING_NAME_VECTOR_COLLECTIONS_ALLOWED_IPS,
             15
         );
+        settingService.addValueConverter(
+            SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT,
+            Numbers::toIntOrZero
+        );
+        settingService.scheduleCacheValue(
+            SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT,
+            15
+        );
+    }
+
+    @Override
+    public int getMaxQueryLimit() {
+        Integer value = settingService.getCachedValue(
+            SETTING_NAME_VECTOR_COLLECTIONS_MAX_QUERY_LIMIT
+        );
+        return value != null
+            ? normalizeMaxQueryLimit(value)
+            : super.getMaxQueryLimit();
     }
 
     @Override
